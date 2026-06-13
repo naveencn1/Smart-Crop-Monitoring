@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Crop Monitoring & AI Disease Detection</title>
+  <!-- Custom CSS Design System -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation (Collapses on mobile to bottom nav) -->
+    <aside class="sidebar">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <i data-lucide="sprout"></i>
+        </div>
+        <div class="brand-text-wrapper">
+          <span class="brand-name" data-i18n="brandTitle">SmartCrop AI</span>
+          <div class="api-status-badge" id="api-status-badge">
+            <span class="status-indicator-dot offline" id="api-status-dot"></span>
+            <span class="status-indicator-text" id="api-status-text">Offline Mode</span>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="nav-menu">
+        <li class="nav-item active" data-view="home">
+          <i data-lucide="home"></i>
+          <span data-i18n="navHome">Home</span>
+        </li>
+        <li class="nav-item" data-view="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span data-i18n="navDashboard">Dashboard</span>
+        </li>
+        <li class="nav-item" data-view="detection">
+          <i data-lucide="scan-eye"></i>
+          <span data-i18n="navDetection">Disease Detection</span>
+        </li>
+        <li class="nav-item" data-view="drone">
+          <i data-lucide="plane"></i>
+          <span data-i18n="navDrone">Drone Monitor</span>
+        </li>
+        <li class="nav-item" data-view="alerts">
+          <i data-lucide="bell"></i>
+          <span data-i18n="navAlerts">Alerts Center</span>
+        </li>
+        <li class="nav-item" data-view="profile">
+          <i data-lucide="user-cog"></i>
+          <span data-i18n="navProfile">Farm Profile</span>
+        </li>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <!-- Language toggle button -->
+        <button class="lang-btn" id="lang-btn-desktop">
+          <i data-lucide="languages"></i>
+          <span data-i18n="langToggle">తెలుగు</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Sticky Header -->
+      <header class="top-header">
+        <div class="page-title-display" id="header-page-title">
+          Home
+        </div>
+        
+        <div class="header-actions">
+          <!-- Mobile Language Button -->
+          <button class="lang-btn" id="lang-btn-mobile" style="display: none; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+            <i data-lucide="languages" style="width: 16px; height: 16px;"></i>
+            <span data-i18n="langToggle">తెలుగు</span>
+          </button>
+          
+          <!-- System Time Display -->
+          <div class="header-time">
+            <i data-lucide="clock"></i>
+            <span id="current-timestamp">09:00 AM</span>
+          </div>
+          
+          <!-- Notifications Bell Icon -->
+          <div class="alert-badge-container" id="notif-bell">
+            <button class="badge-btn">
+              <i data-lucide="bell"></i>
+            </button>
+            <span class="badge-count" id="notif-count">2</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dynamic Content Body -->
+      <main class="content-body">
+        
+        <!-- ==========================================
+             1. HOME VIEW 
+             ========================================== -->
+        <section id="home-view" class="view-section active">
+          <!-- Hero Card Section -->
+          <div class="hero-card">
+            <div class="hero-info">
+              <h1 data-i18n="heroTitle">Next-Gen AI Crop Monitoring & Edge IoT</h1>
+              <p data-i18n="heroSubtitle">Empowering farmers with real-time crop disease detection, satellite drone feeds, and localized edge sensor telemetry to optimize yield.</p>
+              <button class="cta-button" id="hero-cta-btn" data-i18n="getStartedBtn">Get Started</button>
+            </div>
+            <div class="hero-img-box">
+              <img src="assets/hero-farm.png" alt="Automated Smart Farm">
+            </div>
+          </div>
+
+          <!-- Description Section -->
+          <div class="info-section glass-card">
+            <h2 class="section-title" data-i18n="systemOverviewTitle">About the System</h2>
+            <p class="about-text" data-i18n="systemOverviewText">
+              Our platform integrates Artificial Intelligence with Edge Computing to provide offline-capable, real-time farm diagnostics. IoT sensors embedded in fields collect vital data, while aerial drone monitoring highlights stressed areas. On-site AI models analyze leaf images directly, recommending instant treatments without requiring high-bandwidth internet.
+            </p>
+          </div>
+
+          <!-- Features Highlight Section -->
+          <h2 class="section-title" data-i18n="featuresTitle" style="margin-bottom: 1.5rem;">Core Features</h2>
+          <div class="features-grid">
+            <div class="glass-card feat-card">
+              <div class="card-icon-box green" style="margin-bottom: 1rem;">
+                <i data-lucide="scan-eye"></i>
+              </div>
+              <h3 data-i18n="featDetectionTitle">Disease Detection</h3>
+              <p data-i18n="featDetectionDesc">Snap leaf photos to diagnose crop infections instantly using edge-based computer vision.</p>
+            </div>
+            <div class="glass-card feat-card">
+              <div class="card-icon-box green" style="margin-bottom: 1rem;">
+                <i data-lucide="layout-dashboard"></i>
+              </div>
+              <h3 data-i18n="featIoTTitle">IoT Telemetry</h3>
+              <p data-i18n="featIoTDesc">Monitor live soil moisture, humidity, and temperature sensor readouts from your plots.</p>
+            </div>
+            <div class="glass-card feat-card">
+              <div class="card-icon-box green" style="margin-bottom: 1rem;">
+                <i data-lucide="bell"></i>
+              </div>
+              <h3 data-i18n="featAlertsTitle">Smart Alerts</h3>
+              <p data-i18n="featAlertsDesc">Receive critical push notifications when soil moisture drops or pest outbreaks occur.</p>
+            </div>
+            <div class="glass-card feat-card">
+              <div class="card-icon-box green" style="margin-bottom: 1rem;">
+                <i data-lucide="plane"></i>
+              </div>
+              <h3 data-i18n="featDroneTitle">Drone Analysis</h3>
+              <p data-i18n="featDroneDesc">Access remote-sensing aerial imagery mapping field stress and vegetation indexes.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             2. DISEASE DETECTION VIEW 
+             ========================================== -->
+        <section id="detection-view" class="view-section">
+          <div class="glass-card" style="margin-bottom: 2rem;">
+            <h2 data-i18n="detectionHeader">AI Leaf Disease Diagnostics</h2>
+          </div>
+
+          <div class="upload-container">
+            <!-- Left Side: Upload Zone -->
+            <div class="glass-card">
+              <div class="upload-zone" id="drop-zone">
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+                <div class="upload-icon">
+                  <i data-lucide="cloud-upload"></i>
+                </div>
+                <h3 data-i18n="dragDropLabel">Drag & drop leaf photo here, or click to browse</h3>
+                <p data-i18n="supportedFormats">Supports JPG, PNG, WEBP. Maximum size 5MB.</p>
+                <button class="sample-button" id="use-sample-btn" data-i18n="sampleBtn">Use Sample Infected Leaf</button>
+              </div>
+            </div>
+
+            <!-- Right Side: Preview & Diagnostic Details -->
+            <div class="glass-card analysis-preview-panel">
+              <div class="image-preview-card" id="image-preview-box">
+                <i data-lucide="image" style="width: 64px; height: 64px; color: var(--neutral-200);" id="placeholder-icon"></i>
+                <img id="preview-img" style="display: none;" src="" alt="Uploaded Leaf Preview">
+                
+                <!-- AI Scanning Overlay -->
+                <div class="scanner-overlay" id="scanner-overlay">
+                  <div class="scan-beam"></div>
+                  <span class="scanner-label" data-i18n="analyzingText">Analyzing leaf image with Edge AI...</span>
+                </div>
+                
+                <!-- Bounding Box Overlay -->
+                <div class="ai-bounding-box" id="bounding-box">
+                  <span class="ai-bounding-label" id="bounding-label">Infection Zone</span>
+                </div>
+              </div>
+
+              <!-- Report Card -->
+              <div class="detection-results-card" id="results-card">
+                <h3 data-i18n="resultsTitle" style="border-bottom: 2px solid var(--primary-50); padding-bottom: 0.5rem; margin-bottom: 1rem;">Diagnostic Report</h3>
+                <div class="result-row">
+                  <span class="result-label" data-i18n="diseaseNameLabel">Detected Disease</span>
+                  <span class="result-val" id="res-disease-name" style="color: var(--alert-red);">Tomato Early Blight</span>
+                </div>
+                <div class="result-row">
+                  <span class="result-label" data-i18n="confidenceLabel">Confidence Level</span>
+                  <div>
+                    <span class="result-val" id="res-confidence" style="color: var(--primary-600);">94%</span>
+                    <div class="confidence-bar-outer">
+                      <div class="confidence-bar-inner" id="confidence-bar"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="result-row">
+                  <span class="result-label" data-i18n="treatmentLabel">Suggested Treatment Plan</span>
+                  <p id="res-treatment" style="font-size: 0.95rem; color: var(--neutral-700); line-height: 1.6;"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             3. DASHBOARD VIEW 
+             ========================================== -->
+        <section id="dashboard-view" class="view-section">
+          <div class="glass-card" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <h2 data-i18n="dashboardHeader">Edge Sensor Dashboard</h2>
+            <!-- Overall Crop Status Widget -->
+            <div class="glass-card" style="padding: 0.75rem 1.25rem; border-color: var(--neutral-200); margin: 0; box-shadow: none;">
+              <span style="font-size: 0.8rem; font-weight: 600; color: var(--neutral-700); text-transform: uppercase;" data-i18n="cropHealthStatusLabel">Overall Crop Health Status</span>
+              <div class="crop-status-indicator" id="overall-crop-status">
+                <span class="status-dot healthy"></span>
+                <span data-i18n="statusHealthy">Healthy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weather Widget Section -->
+          <div class="glass-card weather-widget-card">
+            <div class="weather-header">
+              <div>
+                <h3 data-i18n="weatherTitle">Local Weather Station</h3>
+                <span style="font-size: 0.85rem; color: var(--neutral-700);" id="weather-location">Guntur, AP</span>
+              </div>
+              <div class="weather-temp-main">
+                <i data-lucide="cloud-sun" style="width: 44px; height: 44px; color: var(--alert-yellow);"></i>
+                <div class="weather-desc-col">
+                  <span class="weather-temp-val">34°C</span>
+                  <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="weatherToday">Today</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="weather-detail-grid">
+              <div class="w-detail-item">
+                <span class="w-detail-label" data-i18n="sensorHumidity">Humidity</span>
+                <span class="w-detail-val">62%</span>
+              </div>
+              <div class="w-detail-item">
+                <span class="w-detail-label">Wind Speed</span>
+                <span class="w-detail-val">12 km/h</span>
+              </div>
+              <div class="w-detail-item">
+                <span class="w-detail-label">Precipitation</span>
+                <span class="w-detail-val">10%</span>
+              </div>
+            </div>
+
+            <!-- Weather Forecast -->
+            <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem;" data-i18n="weatherForecast">3-Day Farming Forecast</h4>
+            <div class="weather-forecast-row">
+              <div class="forecast-day-card">
+                <span style="font-weight:600;">Fri</span>
+                <i data-lucide="sun" style="width: 20px; height: 20px; color: var(--alert-yellow); margin: 0.25rem 0;"></i>
+                <span>35°C</span>
+              </div>
+              <div class="forecast-day-card">
+                <span style="font-weight:600;">Sat</span>
+                <i data-lucide="cloud-rain" style="width: 20px; height: 20px; color: #3b82f6; margin: 0.25rem 0;"></i>
+                <span>32°C</span>
+              </div>
+              <div class="forecast-day-card">
+                <span style="font-weight:600;">Sun</span>
+                <i data-lucide="cloud-sun" style="width: 20px; height: 20px; color: var(--neutral-700); margin: 0.25rem 0;"></i>
+                <span>33°C</span>
+              </div>
+            </div>
+
+            <!-- Weather Advisory -->
+            <div style="margin-top: 1rem; font-size: 0.85rem; border-top: 1px dashed rgba(16, 185, 129, 0.2); padding-top: 0.75rem;">
+              <strong data-i18n="weatherAdvisory">Farming Advisory:</strong> 
+              <span id="weather-advise-text" data-i18n="weatherAdviseText">Dry weather expected. Ideal conditions for harvesting or foliar fertilizer spraying. Avoid middle-of-the-day operations due to high heat index.</span>
+            </div>
+          </div>
+
+          <!-- Real-Time IoT Sensors Grid -->
+          <div class="dashboard-grid">
+            <div class="glass-card">
+              <div class="card-header">
+                <h3 data-i18n="sensorMoisture">Soil Moisture</h3>
+                <div class="card-icon-box green">
+                  <i data-lucide="droplet"></i>
+                </div>
+              </div>
+              <div class="sensor-metric" id="sensor-moisture-val">42<span class="sensor-unit">%</span></div>
+              <div style="font-size: 0.8rem; color: var(--neutral-700); margin-top: 0.5rem;" data-i18n="lastUpdated">Last updated: Just now</div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <h3 data-i18n="sensorTemp">Air Temperature</h3>
+                <div class="card-icon-box yellow">
+                  <i data-lucide="thermometer"></i>
+                </div>
+              </div>
+              <div class="sensor-metric" id="sensor-temp-val">29.4<span class="sensor-unit">°C</span></div>
+              <div style="font-size: 0.8rem; color: var(--neutral-700); margin-top: 0.5rem;" data-i18n="lastUpdated">Last updated: Just now</div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <h3 data-i18n="sensorHumidity">Air Humidity</h3>
+                <div class="card-icon-box green">
+                  <i data-lucide="wind"></i>
+                </div>
+              </div>
+              <div class="sensor-metric" id="sensor-humidity-val">68<span class="sensor-unit">%</span></div>
+              <div style="font-size: 0.8rem; color: var(--neutral-700); margin-top: 0.5rem;" data-i18n="lastUpdated">Last updated: Just now</div>
+            </div>
+          </div>
+
+          <!-- Graphs & SVG Charts -->
+          <div class="glass-card">
+            <h3 data-i18n="chartTitle">Sensor Activity (Last 12 Hours)</h3>
+            
+            <div class="chart-container-box">
+              <svg class="svg-chart" viewBox="0 0 800 250" id="sensor-svg-chart">
+                <defs>
+                  <linearGradient id="moistureGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#2563eb" stop-opacity="0.4"/>
+                    <stop offset="100%" stop-color="#2563eb" stop-opacity="0.0"/>
+                  </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line x1="50" y1="50" x2="750" y2="50" class="chart-grid-line" />
+                <line x1="50" y1="100" x2="750" y2="100" class="chart-grid-line" />
+                <line x1="50" y1="150" x2="750" y2="150" class="chart-grid-line" />
+                <line x1="50" y1="200" x2="750" y2="200" class="chart-grid-line" />
+                
+                <!-- SVG Chart line paths populated by JS -->
+                <path d="" class="chart-area-moisture" id="chart-area-moisture" />
+                <path d="" class="chart-line-moisture" id="chart-line-moisture" />
+                <path d="" class="chart-line-temp" id="chart-line-temp" />
+                <path d="" class="chart-line-humidity" id="chart-line-humidity" />
+
+                <!-- Axes line -->
+                <line x1="50" y1="200" x2="750" y2="200" stroke="#94a3b8" stroke-width="2" />
+                <line x1="50" y1="200" x2="50" y2="30" stroke="#94a3b8" stroke-width="2" />
+
+                <!-- Points overlay group -->
+                <g id="chart-points-group"></g>
+
+                <!-- Axis Labels -->
+                <text x="40" y="205" text-anchor="end" class="chart-axis-label">0%</text>
+                <text x="40" y="155" text-anchor="end" class="chart-axis-label">25% / °C</text>
+                <text x="40" y="105" text-anchor="end" class="chart-axis-label">50% / °C</text>
+                <text x="40" y="55" text-anchor="end" class="chart-axis-label">75% / °C</text>
+
+                <!-- X-Axis Labels (Timeline) -->
+                <text x="50" y="225" text-anchor="middle" class="chart-axis-label">12h ago</text>
+                <text x="190" y="225" text-anchor="middle" class="chart-axis-label">9h ago</text>
+                <text x="330" y="225" text-anchor="middle" class="chart-axis-label">6h ago</text>
+                <text x="470" y="225" text-anchor="middle" class="chart-axis-label">3h ago</text>
+                <text x="610" y="225" text-anchor="middle" class="chart-axis-label">1h ago</text>
+                <text x="750" y="225" text-anchor="middle" class="chart-axis-label">Now</text>
+              </svg>
+            </div>
+
+            <!-- Chart Legends -->
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background-color: #2563eb;"></div>
+                <span data-i18n="sensorMoisture">Soil Moisture</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background-color: #ea580c;"></div>
+                <span data-i18n="sensorTemp">Air Temperature</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background-color: #0891b2;"></div>
+                <span data-i18n="sensorHumidity">Air Humidity</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic AI Advisory Box -->
+          <div class="advisory-box" id="dashboard-advisory-box">
+            <i data-lucide="info" class="advisory-icon" id="advisory-icon-ref"></i>
+            <div class="advisory-content">
+              <h4 data-i18n="recommendationTitle">AI Operational Advisory</h4>
+              <p id="dashboard-advisory-text" data-i18n="adviseNormal">Sensors report optimal levels. Next scheduled watering in 6 hours. Weather is stable.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             4. ALERTS VIEW 
+             ========================================== -->
+        <section id="alerts-view" class="view-section">
+          <div class="alerts-header-row">
+            <h2 data-i18n="alertsHeader">Real-Time Field Alerts</h2>
+            <button class="sample-button" id="clear-alerts-btn" data-i18n="alertDismissAll">Clear All Notifications</button>
+          </div>
+
+          <div class="glass-card" style="padding: 2rem;">
+            <h3 data-i18n="activeAlertsTitle" style="margin-bottom: 1.5rem;">Active Warning Notifications</h3>
+            <div class="alerts-list" id="alerts-list-container">
+              <!-- Item critical -->
+              <div class="alert-item-card critical" data-alert-id="alert-1">
+                <span class="alert-badge critical" data-i18n="alertCritical">CRITICAL</span>
+                <div class="alert-details">
+                  <div class="alert-text">Zone C: Rice Blast Outbreak Detected</div>
+                  <div class="alert-meta">
+                    <span><i data-lucide="clock"></i> <span data-i18n="alertTimeJustNow">Just Now</span></span>
+                    <span><i data-lucide="cpu"></i> Edge AI Engine</span>
+                  </div>
+                </div>
+                <button class="dismiss-alert-btn" onclick="dismissAlert('alert-1')">
+                  <i data-lucide="x"></i>
+                </button>
+              </div>
+
+              <!-- Item warning -->
+              <div class="alert-item-card warning" data-alert-id="alert-2">
+                <span class="alert-badge warning" data-i18n="alertWarning">WARNING</span>
+                <div class="alert-details">
+                  <div class="alert-text">Zone A: Soil Moisture Critical (28%)</div>
+                  <div class="alert-meta">
+                    <span><i data-lucide="clock"></i> <span data-i18n="alertTime10m">10 mins ago</span></span>
+                    <span><i data-lucide="droplet"></i> IoT Sensor Node 4</span>
+                  </div>
+                </div>
+                <button class="dismiss-alert-btn" onclick="dismissAlert('alert-2')">
+                  <i data-lucide="x"></i>
+                </button>
+              </div>
+
+              <!-- Item info -->
+              <div class="alert-item-card info" data-alert-id="alert-3">
+                <span class="alert-badge info" data-i18n="alertInfo">INFO</span>
+                <div class="alert-details">
+                  <div class="alert-text">Drone flight patrol completed successfully. No thermal anomalies.</div>
+                  <div class="alert-meta">
+                    <span><i data-lucide="clock"></i> <span data-i18n="alertTime1h">1 hour ago</span></span>
+                    <span><i data-lucide="plane"></i> Drone Patroller A</span>
+                  </div>
+                </div>
+                <button class="dismiss-alert-btn" onclick="dismissAlert('alert-3')">
+                  <i data-lucide="x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             5. DRONE MONITORING VIEW 
+             ========================================== -->
+        <section id="drone-view" class="view-section">
+          <div class="glass-card" style="margin-bottom: 2rem;">
+            <h2 data-i18n="droneHeader">Drone Aerial Monitoring</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--primary-600); margin-top: 0.25rem;">
+              <span class="rec-dot" style="margin-left: 0;"></span>
+              <span data-i18n="droneStatus">Drone Telemetry: ONLINE (Auto-patrol Mode)</span>
+            </div>
+          </div>
+
+          <div class="drone-view-container">
+            <!-- Left Side: Interactive Video Feed with HUD -->
+            <div class="glass-card" style="padding: 1rem;">
+              <div class="drone-feed-monitor" id="drone-feed-box">
+                <!-- Aerial field view image background -->
+                <img src="assets/drone-view.png" class="drone-video-element" id="drone-feed-img" alt="Drone Live Camera Stream">
+                
+                <!-- Telemetry overlay HUD -->
+                <div class="drone-hud-overlay">
+                  <div class="hud-top">
+                    <div class="hud-rec-flash">
+                      <span class="rec-dot"></span>
+                      <span>LIVE HUD</span>
+                    </div>
+                    <div>CAM 01 // RGB-SENS</div>
+                  </div>
+                  
+                  <div class="crosshair"></div>
+                  
+                  <!-- Hotspot Interactive Nodes -->
+                  <div class="drone-hotspot red" style="top: 40%; left: 65%;">
+                    <div class="hotspot-wave"></div>
+                    <div class="hotspot-dot"></div>
+                    <div class="hotspot-tooltip" data-i18n="zoneRedText">Zone C: Fungal Outbreak detected. 12% crop stress. Recommended local fungicide spray.</div>
+                  </div>
+
+                  <div class="drone-hotspot yellow" style="top: 65%; left: 30%;">
+                    <div class="hotspot-wave"></div>
+                    <div class="hotspot-dot"></div>
+                    <div class="hotspot-tooltip" data-i18n="zoneYellowText">Zone B: Sub-optimal soil hydration. Thermal scan indicates thermal stress.</div>
+                  </div>
+                  
+                  <div class="hud-bottom">
+                    <div class="hud-metrics">
+                      <div><span data-i18n="altitudeLabel">ALT</span>: <span id="drone-alt">42.5m</span></div>
+                      <div><span data-i18n="speedLabel">SPD</span>: <span>18 km/h</span></div>
+                      <div><span data-i18n="batteryLabel">BAT</span>: <span id="drone-bat">88%</span></div>
+                      <div><span data-i18n="coverageLabel">COV</span>: <span>74%</span></div>
+                    </div>
+                    <div style="text-align: right; background: rgba(0,0,0,0.6); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #00ff66;">
+                      GPS: 16.3067° N<br>80.4365° E
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Controls -->
+              <div class="drone-feed-controls">
+                <button class="feed-toggle-btn active" id="btn-view-normal" data-i18n="viewNormal">Visual Camera Feed</button>
+                <button class="feed-toggle-btn" id="btn-view-ndvi" data-i18n="viewNDVI">NDVI (Crop Stress Indicator)</button>
+              </div>
+            </div>
+
+            <!-- Right Side: Flight Grid Map -->
+            <div class="glass-card map-view-panel">
+              <h3 data-i18n="mapLayoutTitle">Field Flight Grid Overlay</h3>
+              
+              <div class="drone-map-grid" id="drone-grid-overlay">
+                <!-- 4x4 Grid cells generated by JS -->
+                <div class="map-cell">A1</div>
+                <div class="map-cell">A2</div>
+                <div class="map-cell">A3</div>
+                <div class="map-cell">A4</div>
+                <div class="map-cell">B1</div>
+                <div class="map-cell drone-pos">B2</div>
+                <div class="map-cell water-stress">B3</div>
+                <div class="map-cell">B4</div>
+                <div class="map-cell">C1</div>
+                <div class="map-cell">C2</div>
+                <div class="map-cell fungal-stress">C3</div>
+                <div class="map-cell">C4</div>
+                <div class="map-cell">D1</div>
+                <div class="map-cell">D2</div>
+                <div class="map-cell">D3</div>
+                <div class="map-cell">D4</div>
+              </div>
+              
+              <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <div style="width: 16px; height: 16px; background-color: var(--primary-50); border: 1px solid var(--primary-500); border-radius: 4px;"></div>
+                  <span>Normal Vegetation</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <div style="width: 16px; height: 16px; background-color: var(--alert-yellow-bg); border: 1px solid var(--alert-yellow); border-radius: 4px;"></div>
+                  <span>Hydration Stress (Warning)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <div style="width: 16px; height: 16px; background-color: var(--alert-red-bg); border: 1px solid var(--alert-red); border-radius: 4px;"></div>
+                  <span>Disease Infection (Critical)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             6. FARM PROFILE VIEW 
+             ========================================== -->
+        <section id="profile-view" class="view-section">
+          <div class="glass-card" style="margin-bottom: 2rem;">
+            <h2 data-i18n="profileHeader">Farmer & Land Profile</h2>
+          </div>
+
+          <div class="glass-card" style="margin-bottom: 2rem;">
+            <form id="profile-form" onsubmit="saveProfile(event)">
+              <h3 data-i18n="farmerDetailsTitle" style="border-bottom: 1px solid var(--neutral-200); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">Farmer Details</h3>
+              
+              <div class="profile-form-grid">
+                <div class="input-field-group">
+                  <label for="farmer-name" data-i18n="farmerNameLabel">Farmer Name</label>
+                  <input type="text" id="farmer-name" value="Rama Rao" required>
+                </div>
+                <div class="input-field-group">
+                  <label for="farmer-phone" data-i18n="farmerPhoneLabel">Phone Number</label>
+                  <input type="tel" id="farmer-phone" value="+91 98765 43210" required>
+                </div>
+              </div>
+
+              <h3 data-i18n="farmDetailsTitle" style="border-bottom: 1px solid var(--neutral-200); padding-bottom: 0.5rem; margin-bottom: 1.25rem; margin-top: 2rem;">Farm Details</h3>
+              
+              <div class="profile-form-grid">
+                <div class="input-field-group">
+                  <label for="farm-location" data-i18n="farmLocationLabel">Farm Location / Village</label>
+                  <input type="text" id="farm-location" value="Kaza Village, Guntur" required>
+                </div>
+                <div class="input-field-group">
+                  <label for="farm-crop" data-i18n="farmCropLabel">Primary Crop Type</label>
+                  <select id="farm-crop">
+                    <option value="rice">Rice (వరి)</option>
+                    <option value="tomato" selected>Tomato (టమోటా)</option>
+                    <option value="wheat">Wheat (గోధుమ)</option>
+                    <option value="chilli">Chilli (మిరప)</option>
+                  </select>
+                </div>
+                <div class="input-field-group">
+                  <label for="farm-size" data-i18n="farmSizeLabel">Cultivated Area (Acres)</label>
+                  <input type="number" id="farm-size" value="4.5" step="0.1" required>
+                </div>
+                <div class="input-field-group">
+                  <label for="soil-type" data-i18n="soilTypeLabel">Soil Category</label>
+                  <select id="soil-type">
+                    <option value="black" selected>Black Cotton Soil</option>
+                    <option value="red">Red Soil</option>
+                    <option value="alluvial">Alluvial Soil</option>
+                    <option value="sandy">Sandy Loam</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="profile-actions-row" style="margin-top: 2rem;">
+                <button type="submit" class="submit-profile-btn" data-i18n="saveProfileBtn">Update Profile Info</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- History Logs of Disease Scans -->
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--neutral-200); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+              <h3 data-i18n="detectionHistoryTitle">Diagnostic History Logs</h3>
+              <button class="sample-button" id="clear-history-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" data-i18n="historyClearBtn">Clear History Logs</button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+              <table class="history-log-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Crop / Diagnosis</th>
+                    <th>Confidence</th>
+                    <th>Action / Recommendation</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <!-- Dynamic rows from storage -->
+                  <tr>
+                    <td>2026-06-10 14:32</td>
+                    <td>Tomato - Tomato Early Blight</td>
+                    <td><span class="badge-percent">94%</span></td>
+                    <td style="font-size: 0.85rem; color: var(--neutral-700);">Apply organic copper-octanoate spray.</td>
+                  </tr>
+                  <tr>
+                    <td>2026-06-08 09:15</td>
+                    <td>Rice - Rice Blast (వరి అగ్గి తెగులు)</td>
+                    <td><span class="badge-percent">89%</span></td>
+                    <td style="font-size: 0.85rem; color: var(--neutral-700);">Drain field, spray Tricyclazole.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       AI CHATBOT FLOATING PANEL & INTERFACE
+       ========================================== -->
+  <div class="chatbot-trigger-btn" id="chatbot-trigger">
+    <i data-lucide="message-square-text" id="chatbot-icon-closed"></i>
+  </div>
+
+  <div class="chatbot-window" id="chatbot-window">
+    <div class="chatbot-header">
+      <div class="chatbot-header-info">
+        <div class="bot-avatar">
+          <i data-lucide="bot"></i>
+        </div>
+        <div class="bot-title-text">
+          <h3 data-i18n="botHeader">Krishi AI Assistant</h3>
+          <div class="bot-online-indicator">
+            <span class="bot-online-dot"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </div>
+      <button class="chatbot-close-btn" id="chatbot-close">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <!-- Scrollable Messages Area -->
+    <div class="chatbot-messages" id="chatbot-messages-container">
+      <div class="chat-bubble bot" data-i18n="botGreeting">
+        Hello! I am Krishi AI, your agricultural assistant. Ask me anything about crop diseases, fertilizers, or water management.
+      </div>
+    </div>
+
+    <!-- Quick Suggested Questions -->
+    <div class="chatbot-quick-replies">
+      <div class="quick-reply-pill" onclick="sendQuickQuestion('rice blast')">Rice Blast?</div>
+      <div class="quick-reply-pill" onclick="sendQuickQuestion('early blight')">Tomato Blight?</div>
+      <div class="quick-reply-pill" onclick="sendQuickQuestion('soil moisture')">Moisture limits?</div>
+      <div class="quick-reply-pill" onclick="sendQuickQuestion('wheat rust')">Wheat Rust?</div>
+    </div>
+
+    <!-- Input Footer Panel -->
+    <div class="chatbot-input-panel">
+      <!-- Voice microphone button overlay -->
+      <button class="voice-input-btn" id="chatbot-mic-btn" title="Simulate Voice Input">
+        <i data-lucide="mic"></i>
+        <!-- Glowing wave simulation visualizer -->
+        <div class="voice-wave-visualizer" id="voice-wave-box">
+          <div class="voice-wave-line"></div>
+          <div class="voice-wave-line"></div>
+          <div class="voice-wave-line"></div>
+          <div class="voice-wave-line"></div>
+          <div class="voice-wave-line"></div>
+        </div>
+      </button>
+      
+      <input type="text" class="chatbot-input-field" id="chatbot-text-input" placeholder="Ask Krishi AI..." data-i18n-placeholder="botPlaceholder">
+      <button class="chatbot-send-btn" id="chatbot-send-btn" data-i18n="botSendBtn">Send</button>
+    </div>
+  </div>
+
+  <!-- Toast notifications popup layout -->
+  <div class="toast-container" id="toast-wrapper"></div>
+
+  <!-- Core JavaScript Application -->
+  <script src="js/translations.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Initialize Lucide icons on page load
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -29,5 +29,9 @@ jobs:
         # Scans the backend and tests directories for security issues
         # -r: recursive
         # -ll: report medium and high severity findings
+        # -q: quiet mode (minimal output)
+        # --format custom: use custom message formatting
+        # --msg-template: suppress filename by printing line number, rule, severity and description
         run: |
-          bandit -r backend/ tests/ -ll
+          bandit -r backend/ tests/ -ll -q --format custom --msg-template "{line}: {test_id}[{severity}]: {msg}"
+

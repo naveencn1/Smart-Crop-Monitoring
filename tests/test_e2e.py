@@ -501,12 +501,109 @@ def run_tests():
             "Setup", "Setup", "Browser driver setup", "Failed", 0, 
             datetime.now(), datetime.now(), str(e), traceback.format_exc()
         )
+def print_qr_and_links(title, url):
+    import sys
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+    
+    print("\n" + "=" * 50)
+    print(f" {title.upper()} ".center(50, "="))
+    print(f"URL Link: {url}")
+    print("=" * 50)
+    print("Scan QR Code to open:")
+    try:
+        import qrcode
+        qr = qrcode.QRCode(version=1, box_size=1, border=1)
+        qr.add_data(url)
+        qr.make(fit=True)
+        qr.print_ascii(out=sys.stdout, invert=True)
+    except Exception as e:
+        print(f"[Notice] Could not print QR Code: {e}")
+    print("=" * 50 + "\n")
+
+def run_tests():
+    driver = None
+    try:
+        driver = create_driver()
+        driver.get(BASE_URL)
+        time.sleep(1.5)
+        
+        # Ensure logged in
+        ensure_logged_in(driver)
+        
+        # Modules List
+        run_test_case(driver, "TC_01", "Login", "Validate login screen with empty input fields", tc_01_empty_inputs)
+        run_test_case(driver, "TC_02", "Login", "Validate login screen with invalid credentials", tc_02_invalid_credentials)
+        run_test_case(driver, "TC_03", "Login", "Validate password display show/hide toggle behavior", tc_03_password_toggle)
+        run_test_case(driver, "TC_04", "Login", "Validate login success transitions user to Dashboard screen", tc_04_success_login)
+        
+        run_test_case(driver, "TC_05", "Registration", "Validate registration screen with empty fields", tc_05_register_empty)
+        run_test_case(driver, "TC_06", "Registration", "Validate registration password mismatch logic", tc_06_register_mismatch)
+        run_test_case(driver, "TC_07", "Registration", "Validate registration minimum password requirements checks", tc_07_register_short_password)
+        run_test_case(driver, "TC_08", "Registration", "Validate registration success and redirections to login screen", tc_08_register_success)
+        
+        run_test_case(driver, "TC_09", "Dashboard", "Validate dashboard net balance aggregates", tc_09_dashboard_balance)
+        run_test_case(driver, "TC_10", "Dashboard", "Validate dashboard SVG asset chart is rendered", tc_10_dashboard_chart)
+        run_test_case(driver, "TC_11", "Dashboard", "Validate dashboard recent transactions log records", tc_11_dashboard_transactions)
+        run_test_case(driver, "TC_12", "Dashboard", "Validate dashboard sidebar navigation routes trigger", tc_12_dashboard_nav)
+        
+        run_test_case(driver, "TC_13", "Income", "Validate adding new income dynamically updates totals", tc_13_income_add)
+        run_test_case(driver, "TC_14", "Income", "Validate adding income blank inputs throws validations alerts", tc_14_income_empty)
+        run_test_case(driver, "TC_15", "Income", "Validate deleting logged income updates balances", tc_15_income_delete)
+        
+        run_test_case(driver, "TC_16", "Expense", "Validate adding new expense dynamically updates totals", tc_16_expense_add)
+        run_test_case(driver, "TC_17", "Expense", "Validate category mappings on new expense items", tc_17_expense_category)
+        run_test_case(driver, "TC_18", "Expense", "Validate deleting logged expense updates balances", tc_18_expense_delete)
+        
+        run_test_case(driver, "TC_19", "Budget", "Validate setting category budget thresholds limits", tc_19_budget_set)
+        run_test_case(driver, "TC_20", "Budget", "Validate exceeding limit raises budget exceed warnings", tc_20_budget_warning)
+        run_test_case(driver, "TC_21", "Budget", "Validate resetting limits clears current tracking bars", tc_21_budget_clear)
+        
+        run_test_case(driver, "TC_22", "Reports", "Validate sorting compiled transactions log by categories", tc_22_reports_filter)
+        run_test_case(driver, "TC_23", "Reports", "Validate showing all compiled listings logs", tc_23_reports_toggle)
+        run_test_case(driver, "TC_24", "Reports", "Validate triggering report export as CSV data", tc_24_reports_export)
+        
+        run_test_case(driver, "TC_25", "Profile", "Validate profile information displays display name", tc_25_profile_view)
+        run_test_case(driver, "TC_26", "Profile", "Validate updating profile name changes avatar elements", tc_26_profile_update)
+        run_test_case(driver, "TC_27", "Profile", "Validate profile name empty validation constraint", tc_27_profile_name_empty)
+        run_test_case(driver, "TC_28", "Profile", "Validate currency updates modify dashboard balance indicators", tc_28_profile_currency)
+        run_test_case(driver, "TC_29", "Profile", "Validate currency dropdown values list contains USD/INR/EUR", tc_29_profile_currency_options)
+        
+        run_test_case(driver, "TC_30", "Logout", "Validate logout updates active session and displays login", tc_30_logout)
+        
+        run_test_case(driver, "TC_31", "Security Check", "Validate system authentication token signature status", tc_31_fail_token)
+        run_test_case(driver, "TC_32", "Cloud Sync", "Validate automatic encrypted background cloud sync", tc_32_fail_sync)
+
+    except Exception as e:
+        print(f"\n[-] Selenium E2E Setup or execution FAILED: {e}")
+        excel_report.add_test(
+            "Setup", "Setup", "Browser driver setup", "Failed", 0, 
+            datetime.now(), datetime.now(), str(e), traceback.format_exc()
+        )
     finally:
         if driver:
             driver.quit()
         
         report_path = excel_report.generate_report()
         print(f"\n[Excel Report] Generated report at: {report_path}")
+        
+        # Generate QR Code and print URLs
+        github_actions_url = "https://github.com/naveencn1/Smart-Crop-Monitoring/actions"
+        print_qr_and_links("GitHub Actions Workflow", github_actions_url)
+        
+        import socket
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+            s.close()
+        except Exception:
+            local_ip = "127.0.0.1"
+            
+        local_app_url = f"http://{local_ip}:8000/finance.html"
+        print_qr_and_links("Mobile App View (Local network)", local_app_url)
         
         # Check if any tests failed (other than the 2 intentional failures)
         failed_tests = [t for t in excel_report.tests if t['status'].lower() == 'failed']
@@ -528,3 +625,4 @@ def run_tests():
 
 if __name__ == "__main__":
     run_tests()
+

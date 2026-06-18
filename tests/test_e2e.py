@@ -590,10 +590,8 @@ def run_tests():
         print(f"\n[Excel Report] Generated report at: {report_path}")
         
         # Generate QR Code and print URLs
-        github_actions_url = "https://github.com/naveencn1/Smart-Crop-Monitoring/actions"
-        print_qr_and_links("GitHub Actions Workflow", github_actions_url)
-        
         import socket
+
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))

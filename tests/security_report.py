@@ -193,6 +193,7 @@ if __name__ == '__main__':
         if os.path.exists(json_path):
             os.remove(json_path)
             
-    print_qr_and_links("GitHub Actions Workflow", "https://github.com/naveencn1/Smart-Crop-Monitoring/actions")
+    print_qr_and_links("Mobile App View (Local network)", "http://localhost:8000/finance.html")
     exit(code)
+
 

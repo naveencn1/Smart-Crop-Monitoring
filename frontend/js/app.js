@@ -41,6 +41,18 @@ const alertTextMap = {
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Check Login Status first
+  const loggedIn = localStorage.getItem('smartcrop_logged_in') === 'true';
+  const loginScreen = document.getElementById('login-screen');
+  const appContainer = document.querySelector('.app-container');
+  if (loggedIn) {
+    if (loginScreen) loginScreen.classList.add('hidden');
+    if (appContainer) appContainer.classList.remove('hidden');
+  } else {
+    if (loginScreen) loginScreen.classList.remove('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
+  }
+
   // Load saved profile if exists
   const savedProfile = localStorage.getItem('smartcrop_profile');
   if (savedProfile) {
@@ -1218,3 +1230,104 @@ function showToast(title, text, type = 'info') {
     }, 300);
   }, 4500);
 }
+
+// --- Authentication UI Handlers ---
+
+window.handleLocalLogin = function(event) {
+  event.preventDefault();
+  const usernameInput = document.getElementById('login-username').value;
+  const passwordInput = document.getElementById('login-password').value;
+  
+  // Show loading spinner
+  const overlay = document.getElementById('auth-loading-overlay');
+  const loadingText = document.getElementById('loading-text');
+  if (overlay) overlay.classList.remove('hidden');
+  if (loadingText) loadingText.textContent = state.currentLanguage === 'en' ? 'Verifying credentials...' : 'రుజువులను ధృవీకరిస్తోంది...';
+  
+  setTimeout(() => {
+    if (overlay) overlay.classList.add('hidden');
+    
+    // Store logged in state
+    localStorage.setItem('smartcrop_logged_in', 'true');
+    
+    // Transition screens
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.querySelector('.app-container');
+    if (loginScreen) loginScreen.classList.add('hidden');
+    if (appContainer) appContainer.classList.remove('hidden');
+    
+    showToast(
+      state.currentLanguage === 'en' ? 'Login Successful' : 'లాగిన్ విజయవంతమైంది',
+      state.currentLanguage === 'en' ? `Welcome back, ${state.profile.name || 'Farmer'}!` : `తిరిగి స్వాగతం, ${state.profile.name || 'రైతు'}!`,
+      'info'
+    );
+  }, 1200);
+};
+
+window.handleGoogleLogin = function() {
+  // Show loading spinner for Google authentication
+  const overlay = document.getElementById('auth-loading-overlay');
+  const loadingText = document.getElementById('loading-text');
+  if (overlay) overlay.classList.remove('hidden');
+  if (loadingText) loadingText.textContent = state.currentLanguage === 'en' ? 'Connecting to Google Accounts...' : 'గూగుల్ ఖాతాకు అనుసంధానిస్తోంది...';
+  
+  setTimeout(() => {
+    if (loadingText) loadingText.textContent = state.currentLanguage === 'en' ? 'Authenticating...' : 'ధృవీకరిస్తోంది...';
+    
+    setTimeout(() => {
+      if (overlay) overlay.classList.add('hidden');
+      
+      // Store logged in state
+      localStorage.setItem('smartcrop_logged_in', 'true');
+      
+      // Transition screens
+      const loginScreen = document.getElementById('login-screen');
+      const appContainer = document.querySelector('.app-container');
+      if (loginScreen) loginScreen.classList.add('hidden');
+      if (appContainer) appContainer.classList.remove('hidden');
+      
+      showToast(
+        state.currentLanguage === 'en' ? 'Google Auth Successful' : 'గూగుల్ లాగిన్ విజయవంతమైంది',
+        state.currentLanguage === 'en' ? `Signed in with Google. Welcome back, ${state.profile.name || 'Farmer'}!` : `గూగుల్ ద్వారా లాగిన్ అయ్యారు. తిరిగి స్వాగతం, ${state.profile.name || 'రైతు'}!`,
+        'info'
+      );
+    }, 1000);
+  }, 1000);
+};
+
+window.handleLogout = function() {
+  // Clear state
+  localStorage.removeItem('smartcrop_logged_in');
+  
+  // Transition screens
+  const loginScreen = document.getElementById('login-screen');
+  const appContainer = document.querySelector('.app-container');
+  if (loginScreen) loginScreen.classList.remove('hidden');
+  if (appContainer) appContainer.classList.add('hidden');
+  
+  // Reset inputs
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) loginForm.reset();
+  
+  showToast(
+    state.currentLanguage === 'en' ? 'Logged Out' : 'లాగ్అవుట్ అయ్యారు',
+    state.currentLanguage === 'en' ? 'You have successfully signed out.' : 'మీరు విజయవంతంగా లాగ్అవుట్ అయ్యారు.',
+    'info'
+  );
+};
+
+window.toggleLoginPassword = function() {
+  const passInput = document.getElementById('login-password');
+  const toggleIcon = document.getElementById('password-toggle');
+  if (!passInput || !toggleIcon) return;
+  
+  if (passInput.type === 'password') {
+    passInput.type = 'text';
+    toggleIcon.setAttribute('data-lucide', 'eye-off');
+  } else {
+    passInput.type = 'password';
+    toggleIcon.setAttribute('data-lucide', 'eye');
+  }
+  lucide.createIcons();
+};
+

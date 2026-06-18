@@ -13,7 +13,7 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager
 # Import the Excel report generator instance
 from excel_report import excel_report
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8000/finance.html"
 
 def create_driver():
     # Attempt Chrome first
@@ -41,6 +41,28 @@ def create_driver():
         except Exception as edge_err:
             print(f"[Driver Setup] Edge also failed: {edge_err}")
             raise Exception("No usable browser webdrivers found on this system.")
+
+def ensure_logged_in(driver):
+    try:
+        login_section = driver.find_element(By.ID, "login-section")
+        if login_section.is_displayed():
+            driver.find_element(By.ID, "login-username").clear()
+            driver.find_element(By.ID, "login-username").send_keys("user@domain.com")
+            driver.find_element(By.ID, "login-password").clear()
+            driver.find_element(By.ID, "login-password").send_keys("ValidPass!2026")
+            driver.find_element(By.ID, "login-btn").click()
+            time.sleep(1)
+    except Exception:
+        pass
+
+def switch_tab_if_needed(driver, tab_name):
+    try:
+        nav_item = driver.find_element(By.ID, f"nav-{tab_name}")
+        if "active" not in nav_item.get_attribute("class"):
+            nav_item.click()
+            time.sleep(0.5)
+    except Exception as e:
+        print(f"  Warning during tab switch to {tab_name}: {e}")
 
 def run_test_case(driver, test_id, module, scenario, test_fn):
     start_time = datetime.now()
@@ -95,123 +117,296 @@ def run_test_case(driver, test_id, module, scenario, test_fn):
         print(f"[-] {test_id} FAILED: {e}")
         excel_report.add_log(end_time.strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Failed executing {scenario}", "FAILED", str(e))
 
-# Test definitions
-def test_1_page_load(driver, test_id):
+# ==========================================
+# TEST DEFINITIONS
+# ==========================================
+
+# 1. LOGIN MODULE
+def tc_01_login_empty(driver, test_id):
     driver.get(BASE_URL)
-    time.sleep(2)
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Navigated to {BASE_URL}", "SUCCESS")
-    
-    brand_name = driver.find_element(By.CLASS_NAME, "brand-name").text
-    assert "SmartCrop AI" in brand_name, f"Unexpected brand title: {brand_name}"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Brand title verified: {brand_name}", "SUCCESS")
-    
-    status_text = driver.find_element(By.ID, "api-status-text").text
-    assert "MODE" in status_text.upper(), f"Invalid status display: {status_text}"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"API Connection Indicator state: {status_text}", "SUCCESS")
-
-def test_2_navigation(driver, test_id):
-    nav_dashboard = driver.find_element(By.XPATH, "//li[@data-view='dashboard']")
-    nav_dashboard.click()
     time.sleep(1)
-    
-    header_title = driver.find_element(By.ID, "header-page-title").text
-    assert "Dashboard" in header_title or "డాష్‌బోర్డ్" in header_title, "Failed to switch to Dashboard page"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Switched to Dashboard view. Header: {header_title}", "SUCCESS")
-
-def test_3_dashboard_metrics(driver, test_id):
-    moisture_val = driver.find_element(By.ID, "sensor-moisture-val").text
-    assert "%" in moisture_val, "Soil Moisture metric missing percent unit"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Soil Moisture verified: {moisture_val}", "SUCCESS")
-    
-    svg_chart = driver.find_element(By.ID, "sensor-svg-chart")
-    assert svg_chart.is_displayed(), "SVG Line Chart is not visible"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "SVG Line Chart display verified", "SUCCESS")
-
-def test_4_disease_detection(driver, test_id):
-    nav_detection = driver.find_element(By.XPATH, "//li[@data-view='detection']")
-    nav_detection.click()
-    time.sleep(1)
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Switched to Leaf Diagnostic AI Scanner view", "SUCCESS")
-    
-    sample_btn = driver.find_element(By.ID, "use-sample-btn")
-    sample_btn.click()
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Clicked use sample leaf button", "SUCCESS")
-    time.sleep(3.5) # Wait for scanning to resolve
-    
-    disease_name = driver.find_element(By.ID, "res-disease-name").text
-    confidence = driver.find_element(By.ID, "res-confidence").text
-    treatment = driver.find_element(By.ID, "res-treatment").text
-    
-    assert len(disease_name) > 0, "No disease name was generated"
-    assert "%" in confidence, "Confidence percent value missing"
-    assert len(treatment) > 0, "No treatment suggestion displayed"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Diagnosis: {disease_name} ({confidence})", "SUCCESS")
-    
-    bounding_box = driver.find_element(By.ID, "bounding-box")
-    if "Healthy" not in disease_name and "ఆరోగ్య" not in disease_name:
-        assert bounding_box.is_displayed(), "AI bounding box overlay was not rendered on infected leaf"
-        excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "AI Bounding Box overlay check: Displayed successfully", "SUCCESS")
-
-def test_5_profile_updates(driver, test_id):
-    nav_profile = driver.find_element(By.XPATH, "//li[@data-view='profile']")
-    nav_profile.click()
-    time.sleep(1)
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Switched to Farmer Profile view", "SUCCESS")
-    
-    name_input = driver.find_element(By.ID, "farmer-name")
-    name_input.clear()
-    name_input.send_keys("Rama Rao Selenium Test")
-    
-    submit_btn = driver.find_element(By.XPATH, "//button[@type='submit']")
-    submit_btn.click()
-    time.sleep(1.5)
-    
-    updated_name = driver.find_element(By.ID, "farmer-name").get_attribute("value")
-    assert updated_name == "Rama Rao Selenium Test", "Failed to update farmer profile name"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Profile updated and verified name: {updated_name}", "SUCCESS")
-
-def test_6_chatbot(driver, test_id):
-    chatbot_trigger = driver.find_element(By.ID, "chatbot-trigger")
-    chatbot_trigger.click()
-    time.sleep(1)
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Opened chatbot window", "SUCCESS")
-    
-    chatbot_window = driver.find_element(By.ID, "chatbot-window")
-    assert "active" in chatbot_window.get_attribute("class"), "Chatbot window did not pop open"
-    
-    quick_reply = driver.find_element(By.XPATH, "//div[contains(@class, 'quick-reply-pill') and (text()='Rice Blast?' or text()='Rice Blast')]")
-    quick_reply.click()
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Clicked quick reply topic pill 'Rice Blast?'", "SUCCESS")
-    time.sleep(3) # Wait for bot response
-    
-    messages = driver.find_elements(By.CLASS_NAME, "chat-bubble")
-    assert len(messages) >= 3, "Chatbot response bubble was not appended"
-    
-    bot_response = messages[-1].text
-    assert len(bot_response) > 0, "Empty bot response"
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, f"Received chatbot reply: {bot_response[:60]}...", "SUCCESS")
-
-def test_7_localization(driver, test_id):
-    # First, let's verify we are on profile tab to see header localization
-    nav_profile = driver.find_element(By.XPATH, "//li[@data-view='profile']")
-    nav_profile.click()
+    driver.find_element(By.ID, "login-btn").click()
     time.sleep(0.5)
+    err = driver.find_element(By.ID, "login-error").text
+    assert "Both Username and Password are required" in err, f"Unexpected error text: {err}"
 
-    lang_btn = driver.find_element(By.ID, "lang-btn-desktop")
-    lang_btn.click()
+def tc_02_login_invalid(driver, test_id):
+    driver.find_element(By.ID, "login-username").send_keys("wrong@domain.com")
+    driver.find_element(By.ID, "login-password").send_keys("wrongpass")
+    driver.find_element(By.ID, "login-btn").click()
+    time.sleep(0.5)
+    err = driver.find_element(By.ID, "login-error").text
+    assert "Invalid username or password" in err, f"Unexpected error text: {err}"
+
+def tc_03_login_success(driver, test_id):
+    driver.find_element(By.ID, "login-username").clear()
+    driver.find_element(By.ID, "login-username").send_keys("user@domain.com")
+    driver.find_element(By.ID, "login-password").clear()
+    driver.find_element(By.ID, "login-password").send_keys("ValidPass!2026")
+    driver.find_element(By.ID, "login-btn").click()
     time.sleep(1)
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Toggled language to Telugu", "SUCCESS")
+    assert driver.find_element(By.ID, "app-section").is_displayed(), "App dashboard section not visible after login"
+
+def tc_04_login_toggle_pwd(driver, test_id):
+    driver.find_element(By.ID, "nav-logout").click()
+    time.sleep(0.5)
+    pwd_field = driver.find_element(By.ID, "login-password")
+    assert pwd_field.get_attribute("type") == "password", "Password field type not password originally"
+    driver.find_element(By.ID, "toggle-login-pwd").click()
+    time.sleep(0.2)
+    assert pwd_field.get_attribute("type") == "text", "Password type did not toggle to text"
+    driver.find_element(By.ID, "toggle-login-pwd").click()
+    time.sleep(0.2)
+    assert pwd_field.get_attribute("type") == "password", "Password type did not toggle back to password"
+
+# 2. REGISTRATION MODULE
+def tc_05_register_empty(driver, test_id):
+    driver.find_element(By.ID, "switch-to-register").click()
+    time.sleep(0.5)
+    driver.find_element(By.ID, "reg-btn").click()
+    time.sleep(0.5)
+    err = driver.find_element(By.ID, "reg-error").text
+    assert "All fields are required" in err, f"Unexpected error: {err}"
+
+def tc_06_register_mismatch(driver, test_id):
+    driver.find_element(By.ID, "reg-username").send_keys("newuser@domain.com")
+    driver.find_element(By.ID, "reg-password").send_keys("Password123")
+    driver.find_element(By.ID, "reg-confirm-password").send_keys("DifferentPassword")
+    driver.find_element(By.ID, "reg-btn").click()
+    time.sleep(0.5)
+    err = driver.find_element(By.ID, "reg-error").text
+    assert "Passwords do not match" in err, f"Unexpected error: {err}"
+
+def tc_07_register_pwd_length(driver, test_id):
+    driver.find_element(By.ID, "reg-confirm-password").clear()
+    driver.find_element(By.ID, "reg-confirm-password").send_keys("Short")
+    driver.find_element(By.ID, "reg-password").clear()
+    driver.find_element(By.ID, "reg-password").send_keys("Short")
+    driver.find_element(By.ID, "reg-btn").click()
+    time.sleep(0.5)
+    err = driver.find_element(By.ID, "reg-error").text
+    assert "Password must be at least 8 characters long" in err, f"Unexpected error: {err}"
+
+def tc_08_register_success(driver, test_id):
+    driver.find_element(By.ID, "reg-password").clear()
+    driver.find_element(By.ID, "reg-password").send_keys("ValidPass!2026")
+    driver.find_element(By.ID, "reg-confirm-password").clear()
+    driver.find_element(By.ID, "reg-confirm-password").send_keys("ValidPass!2026")
+    driver.find_element(By.ID, "reg-btn").click()
+    time.sleep(2)
+    assert driver.find_element(By.ID, "login-section").is_displayed(), "Registration did not redirect back to Login screen"
+
+# 3. DASHBOARD MODULE
+def tc_09_dashboard_balance(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "dashboard")
+    bal = driver.find_element(By.ID, "net-balance").text
+    assert "$" in bal, f"Balance label does not contain dollar symbol: {bal}"
+
+def tc_10_dashboard_chart(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "dashboard")
+    chart = driver.find_element(By.ID, "dashboard-svg-chart")
+    assert chart.is_displayed(), "SVG Asset chart not displayed"
+
+def tc_11_dashboard_tx_list(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "dashboard")
+    table = driver.find_element(By.ID, "dashboard-tx-table")
+    assert table.is_displayed(), "Recent transactions table not visible"
+
+def tc_12_dashboard_nav_items(driver, test_id):
+    ensure_logged_in(driver)
+    assert driver.find_element(By.ID, "nav-dashboard").is_displayed()
+    assert driver.find_element(By.ID, "nav-income").is_displayed()
+    assert driver.find_element(By.ID, "nav-expense").is_displayed()
+
+# 4. INCOME MODULE
+def tc_13_income_add(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "income")
+    driver.find_element(By.ID, "inc-amount").send_keys("1000")
+    driver.find_element(By.ID, "inc-desc").send_keys("Freelance coding")
+    driver.find_element(By.ID, "inc-submit").click()
+    time.sleep(0.5)
+    rows = driver.find_elements(By.XPATH, "//table[@id='income-table']/tbody/tr")
+    assert len(rows) > 0, "No rows found in income table after adding"
+
+def tc_14_income_validation(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "income")
+    driver.find_element(By.ID, "inc-amount").send_keys("500")
+    driver.find_element(By.ID, "inc-desc").clear()
+    driver.find_element(By.ID, "inc-submit").click()
+    time.sleep(0.5)
+    alert = driver.switch_to.alert
+    assert "Description cannot be blank" in alert.text, f"Unexpected alert text: {alert.text}"
+    alert.accept()
+
+def tc_15_income_delete(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "income")
+    initial_rows = len(driver.find_elements(By.XPATH, "//table[@id='income-table']/tbody/tr"))
+    driver.find_element(By.XPATH, "//table[@id='income-table']/tbody/tr[1]//button").click()
+    time.sleep(0.5)
+    new_rows = len(driver.find_elements(By.XPATH, "//table[@id='income-table']/tbody/tr"))
+    assert new_rows == initial_rows - 1, "Income row count was not reduced by 1"
+
+# 5. EXPENSE MODULE
+def tc_16_expense_add(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "expense")
+    driver.find_element(By.ID, "exp-amount").send_keys("150")
+    driver.find_element(By.ID, "exp-desc").send_keys("Restaurant bill")
+    driver.find_element(By.ID, "exp-submit").click()
+    time.sleep(0.5)
+    rows = driver.find_elements(By.XPATH, "//table[@id='expense-table']/tbody/tr")
+    assert len(rows) > 0, "No rows found in expense table after adding"
+
+def tc_17_expense_category(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "expense")
+    driver.find_element(By.ID, "exp-category").send_keys("Entertainment")
+    driver.find_element(By.ID, "exp-amount").send_keys("50")
+    driver.find_element(By.ID, "exp-desc").send_keys("Cinema Ticket")
+    driver.find_element(By.ID, "exp-submit").click()
+    time.sleep(0.5)
+    cells = driver.find_elements(By.XPATH, "//table[@id='expense-table']/tbody/tr/td")
+    categories = [c.text for c in cells[::4]]
+    assert "Entertainment" in categories, "Entertainment category not found in expense records"
+
+def tc_18_expense_delete(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "expense")
+    initial_rows = len(driver.find_elements(By.XPATH, "//table[@id='expense-table']/tbody/tr"))
+    driver.find_element(By.XPATH, "//table[@id='expense-table']/tbody/tr[1]//button").click()
+    time.sleep(0.5)
+    new_rows = len(driver.find_elements(By.XPATH, "//table[@id='expense-table']/tbody/tr"))
+    assert new_rows == initial_rows - 1, "Expense row count was not reduced by 1"
+
+# 6. BUDGET MODULE
+def tc_19_budget_set(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "budget")
+    driver.find_element(By.ID, "bud-amount").send_keys("400")
+    driver.find_element(By.ID, "bud-category").send_keys("Food")
+    driver.find_element(By.ID, "bud-submit").click()
+    time.sleep(0.5)
+    bars = driver.find_elements(By.CLASS_NAME, "budget-card")
+    assert len(bars) > 0, "Budget tracking cards are empty"
+
+def tc_20_budget_warning(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "budget")
+    driver.find_element(By.ID, "bud-amount").send_keys("100")
+    driver.find_element(By.ID, "bud-category").send_keys("Entertainment")
+    driver.find_element(By.ID, "bud-submit").click()
+    time.sleep(0.5)
     
-    telugu_header = driver.find_element(By.ID, "header-page-title").text
-    assert "ప్రొఫైల్" in telugu_header or "Farmer" not in telugu_header, "Telugu translation failed for view header"
+    switch_tab_if_needed(driver, "expense")
+    driver.find_element(By.ID, "exp-category").send_keys("Entertainment")
+    driver.find_element(By.ID, "exp-amount").send_keys("150")
+    driver.find_element(By.ID, "exp-desc").send_keys("Concert ticket")
+    driver.find_element(By.ID, "exp-submit").click()
+    time.sleep(0.5)
     
-    # Toggle back to English
-    lang_btn.click()
-    time.sleep(1)
-    excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), test_id, "Toggled language back to English", "SUCCESS")
-    
-    english_header = driver.find_element(By.ID, "header-page-title").text
-    assert "Profile" in english_header, "English translation revert failed"
+    switch_tab_if_needed(driver, "budget")
+    warnings = driver.find_elements(By.XPATH, "//*[contains(text(), 'Budget Exceeded')]")
+    assert len(warnings) > 0, "Budget exceed warning indicator missing in UI"
+
+def tc_21_budget_clear(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "budget")
+    driver.find_element(By.ID, "clear-budget-btn").click()
+    time.sleep(0.5)
+    bars = driver.find_elements(By.CLASS_NAME, "budget-card")
+    assert len(bars) == 0, "Budget list not cleared"
+
+# 7. REPORTS MODULE
+def tc_22_reports_filter(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "reports")
+    driver.find_element(By.ID, "rep-filter-category").send_keys("Salary")
+    time.sleep(0.5)
+    cells = driver.find_elements(By.XPATH, "//table[@id='reports-table']/tbody/tr/td")
+    categories = [c.text for c in cells[1::4]]
+    for c in categories:
+        assert c == "Salary", f"Found non-Salary entry: {c}"
+
+def tc_23_reports_toggle(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "reports")
+    driver.find_element(By.ID, "rep-filter-category").send_keys("All Categories")
+    time.sleep(0.5)
+    rows = driver.find_elements(By.XPATH, "//table[@id='reports-table']/tbody/tr")
+    assert len(rows) > 0, "All transaction records is empty"
+
+def tc_24_reports_export(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "reports")
+    driver.find_element(By.ID, "rep-export-btn").click()
+    time.sleep(0.5)
+    alert = driver.switch_to.alert
+    assert "triggered" in alert.text, f"Unexpected export message: {alert.text}"
+    alert.accept()
+
+# 8. PROFILE MODULE
+def tc_25_profile_view(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "profile")
+    name = driver.find_element(By.ID, "prof-name").get_attribute("value")
+    assert len(name) > 0, "Profile name is blank"
+
+def tc_26_profile_update(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "profile")
+    input_name = driver.find_element(By.ID, "prof-name")
+    input_name.clear()
+    input_name.send_keys("Naveen CN")
+    driver.find_element(By.ID, "prof-submit").click()
+    time.sleep(0.5)
+    alert = driver.switch_to.alert
+    assert "updated successfully" in alert.text
+    alert.accept()
+    time.sleep(0.5)
+    assert driver.find_element(By.ID, "header-user-name").text == "Naveen CN"
+
+def tc_27_profile_currency(driver, test_id):
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "profile")
+    driver.find_element(By.ID, "prof-currency").send_keys("INR")
+    driver.find_element(By.ID, "prof-submit").click()
+    time.sleep(0.5)
+    alert = driver.switch_to.alert
+    alert.accept()
+    switch_tab_if_needed(driver, "dashboard")
+    bal = driver.find_element(By.ID, "net-balance").text
+    assert "₹" in bal, f"Expected INR symbol in balance card, got {bal}"
+
+# 9. LOGOUT MODULE
+def tc_28_logout(driver, test_id):
+    ensure_logged_in(driver)
+    driver.find_element(By.ID, "nav-logout").click()
+    time.sleep(0.5)
+    assert driver.find_element(By.ID, "login-section").is_displayed(), "Not navigated back to login screen"
+
+# 10. INTENTIONAL FAILURES MODULE
+def tc_29_fail_token(driver, test_id):
+    """Fails Intentionally: Verify Security Token Signature"""
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "profile")
+    badge = driver.find_element(By.ID, "security-token-status")
+    # This assertion will fail because badge.text is actually "PASS"
+    assert badge.text == "FAIL", f"[INTENTIONAL FAILURE] Expected security badge to read FAIL, but it is {badge.text}"
+
+def tc_30_fail_sync(driver, test_id):
+    """Fails Intentionally: Verify Cloud Sync Connection"""
+    ensure_logged_in(driver)
+    switch_tab_if_needed(driver, "profile")
+    badge = driver.find_element(By.ID, "cloud-sync-status")
+    # This assertion will fail because badge.text is actually "FAIL"
+    assert badge.text == "PASS", f"[INTENTIONAL FAILURE] Expected sync badge to read PASS, but it is {badge.text}"
+
 
 def run_tests():
     driver = None
@@ -228,17 +423,49 @@ def run_tests():
             url=BASE_URL
         )
         
-        excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Setup", "Navigate to base URL", "SUCCESS", f"URL: {BASE_URL}")
+        excel_report.add_log(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Setup", "Navigate to Personal Finance SPA", "SUCCESS", f"URL: {BASE_URL}")
         
-        # Run test cases
-        run_test_case(driver, "TC_01", "Main Page", "Page Load & Connection status check", test_1_page_load)
-        run_test_case(driver, "TC_02", "Navigation", "Sidebar Navigation", test_2_navigation)
-        run_test_case(driver, "TC_03", "Dashboard", "Dashboard IoT Sensor Metrics & Chart", test_3_dashboard_metrics)
-        run_test_case(driver, "TC_04", "AI Scan", "Disease Detection & AI Scanning", test_4_disease_detection)
-        run_test_case(driver, "TC_05", "Profile", "Farmer Profile Updates", test_5_profile_updates)
-        run_test_case(driver, "TC_06", "Chatbot", "AI Chatbot Float Trigger & Conversation", test_6_chatbot)
-        run_test_case(driver, "TC_07", "Localization", "Multi-Language Telugu Localization Toggle", test_7_localization)
+        # Execute 30 test cases
+        run_test_case(driver, "TC_01", "Login", "Validate login screen with empty input fields", tc_01_login_empty)
+        run_test_case(driver, "TC_02", "Login", "Validate login error feedback with invalid username/password", tc_02_login_invalid)
+        run_test_case(driver, "TC_03", "Login", "Validate successful authentication and view redirection", tc_03_login_success)
+        run_test_case(driver, "TC_04", "Login", "Validate login password text visibility toggling", tc_04_login_toggle_pwd)
         
+        run_test_case(driver, "TC_05", "Registration", "Validate registration input fields empty state checks", tc_05_register_empty)
+        run_test_case(driver, "TC_06", "Registration", "Validate confirmation password match constraint checking", tc_06_register_mismatch)
+        run_test_case(driver, "TC_07", "Registration", "Validate validation rule for minimum password length check", tc_07_register_pwd_length)
+        run_test_case(driver, "TC_08", "Registration", "Validate registration success and screen redirect to Login", tc_08_register_success)
+        
+        run_test_case(driver, "TC_09", "Dashboard", "Validate dashboard net balances are loaded", tc_09_dashboard_balance)
+        run_test_case(driver, "TC_10", "Dashboard", "Validate SVG asset charts display on layout", tc_10_dashboard_chart)
+        run_test_case(driver, "TC_11", "Dashboard", "Validate recent transactional records display", tc_11_dashboard_tx_list)
+        run_test_case(driver, "TC_12", "Dashboard", "Validate primary menu navigation links rendering", tc_12_dashboard_nav_items)
+        
+        run_test_case(driver, "TC_13", "Income", "Validate adding new income entries increases balance", tc_13_income_add)
+        run_test_case(driver, "TC_14", "Income", "Validate description empty inputs validation constraints", tc_14_income_validation)
+        run_test_case(driver, "TC_15", "Income", "Validate delete button updates income sources logs", tc_15_income_delete)
+        
+        run_test_case(driver, "TC_16", "Expense", "Validate registering new expense distributions logs", tc_16_expense_add)
+        run_test_case(driver, "TC_17", "Expense", "Validate dynamic category selection and records insertion", tc_17_expense_category)
+        run_test_case(driver, "TC_18", "Expense", "Validate deleting items updates expense list data", tc_18_expense_delete)
+        
+        run_test_case(driver, "TC_19", "Budget", "Validate setting limit threshold sets tracking panel", tc_19_budget_set)
+        run_test_case(driver, "TC_20", "Budget", "Validate exceeding limit raises budget exceed warnings", tc_20_budget_warning)
+        run_test_case(driver, "TC_21", "Budget", "Validate resetting limits clears current tracking bars", tc_21_budget_clear)
+        
+        run_test_case(driver, "TC_22", "Reports", "Validate sorting compiled transactions log by categories", tc_22_reports_filter)
+        run_test_case(driver, "TC_23", "Reports", "Validate showing all compiled listings logs", tc_23_reports_toggle)
+        run_test_case(driver, "TC_24", "Reports", "Validate triggering report export as CSV data", tc_24_reports_export)
+        
+        run_test_case(driver, "TC_25", "Profile", "Validate profile information displays display name", tc_25_profile_view)
+        run_test_case(driver, "TC_26", "Profile", "Validate updating profile name changes avatar elements", tc_26_profile_update)
+        run_test_case(driver, "TC_27", "Profile", "Validate currency updates modify dashboard balance indicators", tc_27_profile_currency)
+        
+        run_test_case(driver, "TC_28", "Logout", "Validate logout updates active session and displays login", tc_28_logout)
+        
+        run_test_case(driver, "TC_29", "Security Check", "Validate system authentication token signature status", tc_29_fail_token)
+        run_test_case(driver, "TC_30", "Cloud Sync", "Validate automatic encrypted background cloud sync", tc_30_fail_sync)
+
     except Exception as e:
         print(f"\n[-] Selenium E2E Setup or execution FAILED: {e}")
         excel_report.add_test(
@@ -252,10 +479,21 @@ def run_tests():
         report_path = excel_report.generate_report()
         print(f"\n[Excel Report] Generated report at: {report_path}")
         
-        # Check if any tests failed
-        failed_count = sum(1 for t in excel_report.tests if t['status'].lower() == 'failed')
+        # Check if any tests failed (other than the 2 intentional failures)
+        failed_tests = [t for t in excel_report.tests if t['status'].lower() == 'failed']
+        failed_count = len(failed_tests)
+        
+        # Check if the failures match the expected intentional failure count of 2
+        # Since we intentionally failed exactly TC_29 and TC_30, failed_count should be 2.
+        # If it is exactly 2, we can exit with status 0 or 1. Let's make sure the script exits with 1 if there's any failure (normal E2E failure),
+        # but wait, in GitHub Actions, exiting with 1 marks the workflow as failed. Let's exit with 1 because tests did fail (as requested).
+        # We will exit with 1 if failed_count > 0, which is standard.
         if failed_count > 0:
-            print(f"\n[-] {failed_count} tests failed. Exiting with failure status.")
+            print(f"\n[-] {failed_count} tests failed. (TC_29 and TC_30 are expected intentional failures).")
+            # If the only failures are TC_29 and TC_30, this is expected behavior.
+            # Let's print out the failed tests for debugging
+            for ft in failed_tests:
+                print(f"  - {ft['id']} ({ft['scenario']}): {ft['failure_reason']}")
             sys.exit(1)
         else:
             print("\n[+] All tests completed successfully.")

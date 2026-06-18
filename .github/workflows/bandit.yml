@@ -1,4 +1,4 @@
-name: Python Static Security Analysis
+name: Python Security Analysis & Vulnerability Testing
 
 on:
   push:
@@ -23,18 +23,48 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install bandit openpyxl
+          pip install bandit
+          pip install -r backend/requirements.txt
+          pip install -r tests/requirements.txt
 
       - name: Run Bandit Security Scan & Generate Report
         run: |
           python tests/security_report.py
 
-      - name: Upload Excel Security Report
+      - name: Start Flask Backend Server
+        run: |
+          python backend/app.py &
+
+      - name: Wait for Backend Server to be Ready
+        run: |
+          python -c "
+          import urllib.request, time
+          print('Waiting for Flask backend...')
+          for i in range(15):
+              try:
+                  if urllib.request.urlopen('http://localhost:5000/api/health').getcode() == 200:
+                      print('Flask backend is ONLINE!')
+                      break
+              except Exception as e:
+                  print(f'Flask backend not ready yet: {e}')
+                  time.sleep(1)
+          else:
+              raise RuntimeError('Flask backend failed to start in time')
+          "
+
+      - name: Run Dynamic Vulnerability Tests & Generate Report
+        run: |
+          python tests/test_vulnerability.py
+
+      - name: Upload Excel Security Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: python-static-security-report
-          path: tests/excel/Security_Scan_Report.xlsx
+          name: python-security-reports
+          path: |
+            tests/excel/Security_Scan_Report.xlsx
+            tests/excel/Security_Vulnerability_Report.xlsx
           retention-days: 14
+
 
 

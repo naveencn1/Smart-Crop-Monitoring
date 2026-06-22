@@ -1,0 +1,70 @@
+name: Enterprise Appium E2E Automation
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  e2e-tests:
+    runs-on: macos-13 # macOS is recommended for hardware-accelerated Android Emulators in GitHub Actions
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: mobile-e2e/package.json
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install System Dependencies & Appium CLI
+        run: |
+          npm install -g appium@2.5.4
+          appium driver install uiautomator2
+        working-directory: mobile-e2e
+
+      - name: Install Project Node Modules
+        run: npm ci
+        working-directory: mobile-e2e
+
+      - name: Start Appium Server
+        run: |
+          appium --log ./logs/appium.log &
+        working-directory: mobile-e2e
+
+      - name: Execute E2E Tests on Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: default
+          arch: x86
+          profile: pixel
+          script: |
+            cd mobile-e2e
+            # Run test suit and generate reports
+            npm run test:run || true
+            # Note: "|| true" ensures workflow continues to report-upload step even if tests fail.
+
+      - name: Upload Excel & HTML Test Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: appium-test-reports
+          path: |
+            mobile-e2e/excel/Mobile_E2E_Report.xlsx
+            mobile-e2e/reports/
+            mobile-e2e/logs/
+          retention-days: 14

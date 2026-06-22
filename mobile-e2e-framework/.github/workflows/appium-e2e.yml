@@ -1,0 +1,72 @@
+name: Appium E2E Android
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  android-e2e:
+    runs-on: ubuntu-latest
+    env:
+      APPIUM_HOST: 127.0.0.1
+      APPIUM_PORT: 4723
+      APPIUM_BASE_PATH: /wd/hub
+      USE_INSTALLED_APP: false
+      DEVICE_NAME: emulator-5554
+      PLATFORM_VERSION: '13.0'
+      APP_PACKAGE: com.example.app
+      APP_ACTIVITY: .MainActivity
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK and create emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: true
+          emulator-options: '-no-window -gpu swiftshader_indirect'
+
+      - name: Install Appium
+        run: npm install -g appium@2.0.0
+
+      - name: Install dependencies
+        working-directory: mobile-e2e-framework
+        run: npm ci
+
+      - name: Start Appium server
+        working-directory: mobile-e2e-framework
+        run: npx appium --port 4723 --base-path /wd/hub --log-level error &
+
+      - name: Wait for Appium to become ready
+        run: sleep 15
+
+      - name: Run test suite
+        working-directory: mobile-e2e-framework
+        run: npm run ci
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-e2e-artifacts
+          path: |
+            mobile-e2e-framework/reports/html
+            mobile-e2e-framework/excel/Mobile_E2E_Report.xlsx
+            mobile-e2e-framework/screenshots
+            mobile-e2e-framework/logs

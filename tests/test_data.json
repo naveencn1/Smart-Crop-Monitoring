@@ -1,0 +1,95 @@
+{
+  "profile_data": [
+    {"name": "Rama Rao", "region": "Andhra Pradesh", "farm_size": "5", "crop": "Rice", "phone": "9876543210"},
+    {"name": "Suresh Kumar", "region": "Karnataka", "farm_size": "10", "crop": "Wheat", "phone": "9876543211"},
+    {"name": "Priya Singh", "region": "Punjab", "farm_size": "15", "crop": "Cotton", "phone": "9876543212"},
+    {"name": "Arjun Patel", "region": "Gujarat", "farm_size": "8", "crop": "Maize", "phone": "9876543213"},
+    {"name": "Kavya Sharma", "region": "Madhya Pradesh", "farm_size": "12", "crop": "Soybean", "phone": "9876543214"},
+    {"name": "Rohan Reddy", "region": "Telangana", "farm_size": "7", "crop": "Sugarcane", "phone": "9876543215"},
+    {"name": "Neha Verma", "region": "Uttar Pradesh", "farm_size": "20", "crop": "Rice", "phone": "9876543216"},
+    {"name": "Ajay Singh", "region": "Haryana", "farm_size": "18", "crop": "Wheat", "phone": "9876543217"},
+    {"name": "Pooja Gupta", "region": "Maharashtra", "farm_size": "6", "crop": "Sugarcane", "phone": "9876543218"},
+    {"name": "Vikram Joshi", "region": "Bihar", "farm_size": "4", "crop": "Rice", "phone": "9876543219"},
+    {"name": "Sneha Das", "region": "West Bengal", "farm_size": "9", "crop": "Jute", "phone": "9876543220"},
+    {"name": "Sanjay Yadav", "region": "Rajasthan", "farm_size": "11", "crop": "Mustard", "phone": "9876543221"},
+    {"name": "Ravi Kumar", "region": "Tamil Nadu", "farm_size": "13", "crop": "Coconut", "phone": "9876543222"},
+    {"name": "Divya Nair", "region": "Kerala", "farm_size": "14", "crop": "Pepper", "phone": "9876543223"},
+    {"name": "Ashish Pandey", "region": "Odisha", "farm_size": "16", "crop": "Rice", "phone": "9876543224"},
+    {"name": "Madhuri Sharma", "region": "Himachal Pradesh", "farm_size": "3", "crop": "Apple", "phone": "9876543225"},
+    {"name": "Sandeep Singh", "region": "Uttarakhand", "farm_size": "5", "crop": "Rice", "phone": "9876543226"},
+    {"name": "Priya Raj", "region": "Goa", "farm_size": "2", "crop": "Coconut", "phone": "9876543227"},
+    {"name": "Arjun Kumar", "region": "Chhattisgarh", "farm_size": "17", "crop": "Rice", "phone": "9876543228"},
+    {"name": "Sunita Devi", "region": "Jharkhand", "farm_size": "8", "crop": "Maize", "phone": "9876543229"}
+  ],
+  "chat_messages": [
+    {"message": "How do I treat rice blast?", "expected_keyword": "fungicide"},
+    {"message": "What is the best irrigation method?", "expected_keyword": "water"},
+    {"message": "How often should I fertilize my crops?", "expected_keyword": "month"},
+    {"message": "What is the optimal soil pH for wheat?", "expected_keyword": "6"},
+    {"message": "How do I prevent leaf spot disease?", "expected_keyword": "spray"},
+    {"message": "What is crop rotation?", "expected_keyword": "rotate"},
+    {"message": "How do I improve soil fertility?", "expected_keyword": "organic"},
+    {"message": "What are the signs of nitrogen deficiency?", "expected_keyword": "yellow"},
+    {"message": "How do I manage pests organically?", "expected_keyword": "neem"},
+    {"message": "What is the best time to plant rice?", "expected_keyword": "monsoon"},
+    {"message": "How do I use drip irrigation?", "expected_keyword": "water"},
+    {"message": "What is integrated pest management?", "expected_keyword": "control"},
+    {"message": "How do I prepare soil for planting?", "expected_keyword": "till"},
+    {"message": "What are the common wheat diseases?", "expected_keyword": "rust"},
+    {"message": "How do I test soil quality?", "expected_keyword": "lab"},
+    {"message": "What is the yield of cotton?", "expected_keyword": "kg"},
+    {"message": "How do I manage water in rainy season?", "expected_keyword": "drain"},
+    {"message": "What are micronutrients?", "expected_keyword": "zinc"},
+    {"message": "How do I select quality seeds?", "expected_keyword": "certified"},
+    {"message": "What is composting?", "expected_keyword": "decompose"}
+  ],
+  "sensor_value_ranges": [
+    {"metric": "moisture", "min": 20, "max": 80, "unit": "%"},
+    {"metric": "temperature", "min": 15, "max": 40, "unit": "°C"},
+    {"metric": "humidity", "min": 30, "max": 95, "unit": "%"},
+    {"metric": "nitrogen", "min": 0, "max": 300, "unit": "mg/kg"},
+    {"metric": "phosphorus", "min": 0, "max": 100, "unit": "mg/kg"},
+    {"metric": "potassium", "min": 0, "max": 500, "unit": "mg/kg"}
+  ],
+  "invalid_inputs": [
+    {"name": "", "expected_error": "Name is required"},
+    {"name": "A", "expected_error": "Name too short"},
+    {"phone": "123", "expected_error": "Invalid phone"},
+    {"phone": "abcdefghij", "expected_error": "Invalid phone"},
+    {"farm_size": "-5", "expected_error": "Farm size must be positive"},
+    {"farm_size": "0", "expected_error": "Farm size must be greater than 0"},
+    {"farm_size": "99999", "expected_error": "Farm size too large"}
+  ],
+  "languages": [
+    {"code": "en", "name": "English"},
+    {"code": "te", "name": "Telugu"}
+  ],
+  "diseases": [
+    {"name": "Healthy Leaf", "confidence": "95", "treatment": "Regular monitoring"},
+    {"name": "Rice Blast", "confidence": "92", "treatment": "Apply fungicide"},
+    {"name": "Leaf Spot", "confidence": "88", "treatment": "Remove infected leaves"},
+    {"name": "Brown Spot", "confidence": "85", "treatment": "Improve drainage"},
+    {"name": "Sheath Blight", "confidence": "87", "treatment": "Spray carbendazim"},
+    {"name": "Powdery Mildew", "confidence": "90", "treatment": "Apply sulfur dust"},
+    {"name": "Root Rot", "confidence": "83", "treatment": "Improve soil drainage"},
+    {"name": "Bacterial Blight", "confidence": "86", "treatment": "Remove infected parts"},
+    {"name": "Viral Disease", "confidence": "81", "treatment": "Control vector insects"},
+    {"name": "Anthracnose", "confidence": "84", "treatment": "Apply copper fungicide"}
+  ],
+  "navigation_paths": [
+    {"from": "dashboard", "to": "detection", "expected_view": "detection"},
+    {"from": "dashboard", "to": "profile", "expected_view": "profile"},
+    {"from": "detection", "to": "dashboard", "expected_view": "dashboard"},
+    {"from": "detection", "to": "profile", "expected_view": "profile"},
+    {"from": "profile", "to": "dashboard", "expected_view": "dashboard"},
+    {"from": "profile", "to": "detection", "expected_view": "detection"}
+  ],
+  "quick_reply_topics": [
+    {"topic": "Rice Blast", "expected_keywords": ["fungicide", "spray"]},
+    {"topic": "Leaf Spot", "expected_keywords": ["remove", "infected"]},
+    {"topic": "Irrigation", "expected_keywords": ["water", "drip"]},
+    {"topic": "Fertilization", "expected_keywords": ["nitrogen", "phosphorus"]},
+    {"topic": "Pest Management", "expected_keywords": ["pest", "control"]},
+    {"topic": "Soil Health", "expected_keywords": ["soil", "quality"]}
+  ]
+}

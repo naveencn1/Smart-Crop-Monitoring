@@ -4,7 +4,7 @@
 
 // --- Global Application State ---
 const state = {
-  backendBaseUrl: 'http://127.0.0.1:5000',
+  backendBaseUrl: 'https://smart-crop-monitoring-3.onrender.com/',
   isOnline: false,
   currentLanguage: localStorage.getItem('smartcrop_lang') || 'en',
   activeView: 'home',

@@ -78,10 +78,13 @@ def driver(browser_config):
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
             
-            driver = webdriver.Chrome(
-                service=ChromeService(ChromeDriverManager().install()),
-                options=options
-            )
+            try:
+                driver = webdriver.Chrome(options=options)
+            except Exception:
+                driver = webdriver.Chrome(
+                    service=ChromeService(ChromeDriverManager().install()),
+                    options=options
+                )
             print("\n[Driver] Chrome browser initialized")
         else:
             options = webdriver.EdgeOptions()
@@ -91,10 +94,13 @@ def driver(browser_config):
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--window-size=1920,1080")
             
-            driver = webdriver.Edge(
-                service=EdgeService(EdgeChromiumDriverManager().install()),
-                options=options
-            )
+            try:
+                driver = webdriver.Edge(options=options)
+            except Exception:
+                driver = webdriver.Edge(
+                    service=EdgeService(EdgeChromiumDriverManager().install()),
+                    options=options
+                )
             print("\n[Driver] Edge browser initialized")
         
         driver.implicitly_wait(IMPLICIT_WAIT)

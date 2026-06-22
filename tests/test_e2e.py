@@ -32,9 +32,15 @@ def create_driver():
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--window-size=1920,1080")
-        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-        print("[Driver Setup] Successfully launched headless Chrome")
-        return driver
+        try:
+            driver = webdriver.Chrome(options=options)
+            print("[Driver Setup] Successfully launched headless Chrome (Selenium Manager)")
+            return driver
+        except Exception as sm_err:
+            print(f"[Driver Setup] Selenium Manager failed: {sm_err}. Trying ChromeDriverManager...")
+            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+            print("[Driver Setup] Successfully launched headless Chrome (ChromeDriverManager)")
+            return driver
     except Exception as chrome_err:
         print(f"[Driver Setup] Chrome failed: {chrome_err}. Attempting Microsoft Edge...")
         try:
@@ -43,9 +49,14 @@ def create_driver():
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--window-size=1920,1080")
-            driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
-            print("[Driver Setup] Successfully launched headless Edge")
-            return driver
+            try:
+                driver = webdriver.Edge(options=options)
+                print("[Driver Setup] Successfully launched headless Edge (Selenium Manager)")
+                return driver
+            except Exception:
+                driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
+                print("[Driver Setup] Successfully launched headless Edge (EdgeChromiumDriverManager)")
+                return driver
         except Exception as edge_err:
             print(f"[Driver Setup] Edge also failed: {edge_err}")
             raise Exception("No usable browser webdrivers found on this system.")

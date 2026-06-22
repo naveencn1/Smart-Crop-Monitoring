@@ -12,7 +12,7 @@ pytest-metadata==2.0.4
 
 # Selenium and browser automation
 selenium==4.15.2
-webdriver-manager==4.0.1
+webdriver-manager==4.0.2
 
 # Utilities
 requests==2.31.0

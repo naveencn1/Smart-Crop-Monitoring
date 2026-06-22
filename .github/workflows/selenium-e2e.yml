@@ -1,4 +1,4 @@
-name: Selenium E2E Web Test Automation
+name: Selenium Testing
 
 on:
   push:

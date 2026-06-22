@@ -96,7 +96,7 @@ jobs:
 
       - name: 📤 Upload Test Artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: appium-test-results-api${{ matrix.api-level }}
           path: mobile-e2e-framework/test-artifacts/
@@ -104,7 +104,7 @@ jobs:
 
       - name: 📊 Upload Excel Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: excel-report-api${{ matrix.api-level }}
           path: |
@@ -230,7 +230,7 @@ jobs:
           "
 
       - name: 📤 Upload Final Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-summary-report
           path: final-reports/
@@ -264,3 +264,4 @@ jobs:
       - name: 🎉 Success Notification
         if: success()
         run: echo "✅ All 300+ Appium tests passed successfully!"
+

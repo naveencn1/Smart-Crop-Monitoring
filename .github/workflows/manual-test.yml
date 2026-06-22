@@ -107,7 +107,7 @@ jobs:
 
       - name: 📤 Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: manual-test-results-api${{ inputs.apiLevel }}-${{ inputs.testSuite }}
           path: |
@@ -150,7 +150,7 @@ jobs:
 
       - name: 📤 Upload Excel Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: excel-report-manual-${{ inputs.testSuite }}
           path: mobile-e2e-framework/excel/
@@ -179,3 +179,4 @@ jobs:
             Results: Check artifacts
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
         continue-on-error: true
+

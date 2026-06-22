@@ -43,7 +43,7 @@ jobs:
           find . -name "*.xlsx" | xargs tar -czf ../archives/excel/$(date +%Y-%m-%d)/excel-$(date +%H-%M-%S).tar.gz 2>/dev/null || echo "No excel files to compress"
 
       - name: 💾 Upload Archived Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: archived-reports-${{ github.run_id }}
           path: archives/
@@ -85,7 +85,7 @@ jobs:
           cat monthly-summary.md
 
       - name: 📤 Publish Summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: monthly-summary
           path: monthly-summary.md
@@ -239,7 +239,7 @@ jobs:
               <div class="section\">\n                <h2>🔧 CI/CD Pipeline</h2>\n                <p><strong>Automated Workflows:</strong></p>\n                <ul style=\"margin-left: 20px; margin-top: 10px; color: #666;\">\n                  <li>✅ Push & Pull Request Validation</li>\n                  <li>✅ Weekly Scheduled Execution</li>\n                  <li>✅ Manual Test Execution (workflow_dispatch)</li>\n                  <li>✅ Security & Dependency Scanning</li>\n                  <li>✅ Report Generation & Archiving</li>\n                  <li>✅ Test Results Publishing</li>\n                </ul>\n              </div>\n              \n              <div class=\"section\">\n                <h2>📊 Report Types</h2>\n                <ul style=\"margin-left: 20px; margin-top: 10px; color: #666;\">\n                  <li>📄 <strong>Excel Reports</strong> - Detailed analysis with statistics</li>\n                  <li>📊 <strong>HTML Reports</strong> - Interactive mochawesome reports</li>\n                  <li>📋 <strong>JSON Results</strong> - Machine-readable test data</li>\n                  <li>📸 <strong>Screenshots</strong> - Failure evidence and artifacts</li>\n                  <li>📈 <strong>Summary Reports</strong> - Executive summaries</li>\n                </ul>\n              </div>\n              \n              <footer>\n                <p>Last Updated: <span id=\"timestamp\"></span></p>\n                <p>Smart Crop Monitoring - Appium E2E Test Framework v1.0</p>\n              </footer>\n            </div>\n            \n            <script>\n              document.getElementById('timestamp').textContent = new Date().toLocaleString();\n            </script>\n          </body>\n          </html>\n          EOF\n          cat test-dashboard.html
 
       - name: 📤 Publish Dashboard
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-dashboard
           path: test-dashboard.html
@@ -300,8 +300,9 @@ jobs:
           ## Quality Metrics\n          \n          | Metric | Target | Status |\n          |--------|--------|--------|\n          | Test Cases | 300+ | ✅ Met |\n          | Modules Covered | 4 | ✅ Met |\n          | Execution Time | <90m | ✅ On Target |\n          | Report Format | Excel + HTML | ✅ Ready |\n          | CI/CD Integration | GitHub Actions | ✅ Active |\n          | Automated Scheduling | Weekly | ✅ Configured |\n          | Manual Execution | Supported | ✅ Available |\n          | Archive & History | 180 days | ✅ Enabled |\n          \n          ## GitHub Actions Workflows\n          \n          ### 1. Appium Tests (`appium-tests.yml`)\n          - Runs on push, pull request, weekly schedule\n          - Executes all 300+ tests\n          - Generates Excel and HTML reports\n          - Multi-API level testing (30, 31)\n          \n          ### 2. CI Pipeline (`ci.yml`)\n          - Code linting and validation\n          - Security scanning\n          - Test count verification\n          - Dependency checks\n          \n          ### 3. Manual Tests (`manual-test.yml`)\n          - Workflow dispatch for on-demand execution\n          - Suite selection (all, auth, dashboard, detection, profile)\n          - API level selection\n          - Report generation toggle\n          \n          ### 4. Archive & Reports (`archive-reports.yml`)\n          - Daily report archiving\n          - Long-term storage\n          - Dashboard generation\n          - Quality metrics tracking\n          \n          ## Report Artifacts\n          \n          All test reports are automatically uploaded and archived:\n          \n          - **Excel Reports** (Retention: 60 days)\n            - Summary sheet with overall metrics\n            - Detailed test results with status\n            - Statistics by test suite\n            - Failure analysis\n          \n          - **HTML Reports** (Retention: 30 days)\n            - Interactive mochawesome reports\n            - Test timeline\n            - Failure details\n          \n          - **Artifacts** (Retention: 30 days)\n            - Screenshots on failure\n            - Test logs\n            - Device logs\n          \n          ## Execution Instructions\n          \n          ### Automated Execution\n          Tests run automatically on:\n          - Push to main/develop branches\n          - Pull requests\n          - Weekly schedule (Sunday 2 AM UTC)\n          \n          ### Manual Execution\n          \n          ```bash\n          # Via GitHub Actions\n          1. Go to Actions → \"Manual Test Execution\"\n          2. Click \"Run workflow\"\n          3. Select test suite, API level, options\n          4. Click \"Run workflow\"\n          ```\n          \n          ### Local Execution\n          \n          ```bash\n          cd mobile-e2e-framework\n          npm install\n          npx appium --log-level info &\n          npm test\n          npm run report  # Generate Excel report\n          ```\n          \n          ## Best Practices\n          \n          1. **Test Organization**: Tests grouped by feature/module\n          2. **Page Object Model**: Maintainable and scalable\n          3. **Comprehensive Coverage**: All critical paths covered\n          4. **Error Handling**: Graceful failure management\n          5. **Screenshots**: Captured on failures for debugging\n          6. **Reporting**: Detailed metrics and analysis\n          7. **CI/CD Integration**: Automated execution pipeline\n          8. **Archive Strategy**: Long-term test history\n          \n          ## Future Enhancements\n          \n          - [ ] Parallel test execution optimization\n          - [ ] Machine learning for failure prediction\n          - [ ] API performance testing\n          - [ ] Load testing for concurrent users\n          - [ ] Visual regression testing\n          - [ ] Cross-device testing matrix\n          - [ ] Real device cloud integration\n          - [ ] Test flakiness detection\n          \n          EOF\n          cat QUALITY_REPORT.md
 
       - name: 📤 Publish Quality Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: quality-report
           path: QUALITY_REPORT.md
           retention-days: 365
+

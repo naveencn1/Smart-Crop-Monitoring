@@ -67,7 +67,7 @@ jobs:
             --scan mobile-e2e-framework
 
       - name: 📤 Upload Security Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-scan-results
@@ -173,7 +173,8 @@ jobs:
           cat test-inventory.md
 
       - name: 📤 Upload Test Inventory
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-inventory
           path: mobile-e2e-framework/test-inventory.md
+

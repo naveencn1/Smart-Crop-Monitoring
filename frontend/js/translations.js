@@ -132,6 +132,7 @@ const translations = {
     botReplyMoisture: "Standard cereal crops like rice prefer saturated soils. Vegetables prefer a moisture level between 40% and 60%. Try to irrigate in the early morning.",
     botReplyBlight: "Early Blight of tomato can be treated by pruning infected lower leaves and spraying a copper fungicide or organic Neem extract.",
     botReplyRust: "Wheat Rust is highly infectious. Apply propiconazole or tebuconazole immediately and plant resistant seeds next cycle.",
+    logoutBtn: "Logout",
   },
   te: {
     // Navigation
@@ -266,6 +267,7 @@ const translations = {
     botReplyMoisture: "వరి పంట నిండుగా నీరు ఉండడానికి ఇష్టపడుతుంది. కూరగాయలకు 40% నుండి 60% తేమ అవసరం. ఉదయాన్నే నీరు పెట్టడానికి ప్రయత్నించండి.",
     botReplyBlight: "టమోటా ఎర్లీ బ్లైట్ నివారణకు కింద ఉన్న రోగగ్రస్త ఆకులను కత్తిరించి, రాగి శిలీంద్ర నాశని లేదా వేప నూనెను పిచికారీ చేయండి.",
     botReplyRust: "గోధుమ ఆకు తుప్పు చాలా త్వరగా వ్యాపిస్తుంది. ప్రొపికోనాజోల్ లేదా టెబుకోనాజోల్ వెంటనే పిచికారీ చేసి, తదుపరి సారి తెగులు తట్టుకునే విత్తనాలు వాడండి.",
+    logoutBtn: "లాగ్అవుట్",
   }
 };
 

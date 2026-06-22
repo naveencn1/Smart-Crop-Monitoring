@@ -1,0 +1,18 @@
+# Python virtual environments & packages
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Local configuration files
+.env
+.env.local
+
+# Selenium Excel E2E test outputs
+tests/excel/
+tests/excel_report.xlsx
+tests/__pycache__/
+
+# OS files
+.DS_Store
+Thumbs.db

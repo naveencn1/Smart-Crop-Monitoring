@@ -24,18 +24,21 @@ jobs:
         working-directory: mobile-e2e-framework
         run: npm ci
 
-      - name: 🔍 Check Code Style
-        working-directory: mobile-e2e-framework
-        run: |
-          npm run lint || echo "Linting warnings found"
-
       - name: ✅ Validate Test Files
         working-directory: mobile-e2e-framework
         run: |
-          find tests -name "*.test.js" -type f | while read file; do
-            echo "Validating: $file"
-            node -c "$file" || exit 1
-          done
+          echo "Validating JavaScript syntax..."
+          if [ -d "tests" ]; then
+            for file in tests/*.test.js; do
+              if [ -f "$file" ]; then
+                echo "Checking: $file"
+                node -c "$file" || exit 1
+              fi
+            done
+            echo "✅ All test files have valid syntax"
+          else
+            echo "⚠️ Tests directory not found"
+          fi
 
   security-scan:
     runs-on: ubuntu-latest

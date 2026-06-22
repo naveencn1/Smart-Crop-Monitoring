@@ -22,7 +22,8 @@
   "devDependencies": {
     "appium": "^2.0.0",
     "mocha": "^10.2.0",
-    "mochawesome": "^8.0.1",
+    "mochawesome": "^7.1.3",
+    "mochawesome-report-generator": "^6.2.0",
     "rimraf": "^5.0.0"
   },
   "engines": {

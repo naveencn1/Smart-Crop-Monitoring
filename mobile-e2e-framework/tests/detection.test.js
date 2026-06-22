@@ -162,9 +162,9 @@ describe('Disease Detection Tests (80+ cases)', () => {
     it('should handle orientation change during photo', async () => {
       await detectionPage.openCamera();
       await driver.pause(1000);
-      await driver.orientation = 'LANDSCAPE';
+      await driver.setOrientation('LANDSCAPE');
       await driver.pause(500);
-      await driver.orientation = 'PORTRAIT';
+      await driver.setOrientation('PORTRAIT');
     });
 
     it('should save captured photo to device', async () => {

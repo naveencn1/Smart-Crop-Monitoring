@@ -405,9 +405,9 @@ describe('Authentication Tests (80+ cases)', () => {
 
     it('should handle device orientation change during biometric', async () => {
       await loginPage.loginWithBiometric();
-      await driver.orientation = 'LANDSCAPE';
+      await driver.setOrientation('LANDSCAPE');
       await driver.pause(1000);
-      await driver.orientation = 'PORTRAIT';
+      await driver.setOrientation('PORTRAIT');
     });
 
     it('should verify biometric authentication timestamp', async () => {

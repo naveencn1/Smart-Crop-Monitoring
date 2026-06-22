@@ -33,7 +33,7 @@ jobs:
       - name: Install System Dependencies & Appium CLI
         run: |
           npm install -g appium@2.5.4
-          appium driver install uiautomator2
+          appium driver install uiautomator2@2.45.1
         working-directory: mobile-e2e
 
       - name: Install Project Node Modules

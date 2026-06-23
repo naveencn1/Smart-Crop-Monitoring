@@ -13,19 +13,19 @@ jobs:
 
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 📦 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
       - name: 📥 Install Dependencies
-        working-directory: mobile-e2e-framework
+        working-directory: mobile-e2e
         run: npm ci
 
       - name: ✅ Validate Test Files
-        working-directory: mobile-e2e-framework
+        working-directory: mobile-e2e
         run: |
           echo "Validating JavaScript syntax..."
           if [ -d "tests" ]; then
@@ -46,25 +46,26 @@ jobs:
 
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 📦 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
       - name: 🔐 Run npm audit
-        working-directory: mobile-e2e-framework
+        working-directory: mobile-e2e
         run: npm audit --audit-level=moderate || true
 
       - name: 🔐 OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          path: 'mobile-e2e-framework'
+          project: 'Smart-Crop-Monitoring'
+          path: 'mobile-e2e'
           format: 'JSON'
           args: >
             --enableExperimental
-            --scan mobile-e2e-framework
+            --scan mobile-e2e
 
       - name: 📤 Upload Security Results
         uses: actions/upload-artifact@v4
@@ -75,99 +76,70 @@ jobs:
 
   test-count-verification:
     runs-on: ubuntu-latest
-    name: Verify 300+ Test Cases
+    name: Verify 350 Test Cases
 
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 📦 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: 🔢 Count Test Cases
-        working-directory: mobile-e2e-framework
+      - name: 🔢 Count and Verify Test Cases
+        working-directory: mobile-e2e
         run: |
-          echo "📊 Test Case Count:"
-          echo ""
-          echo "Authentication Tests:"
-          grep -c "it(" tests/authentication.test.js || echo "0"
-          echo ""
-          echo "Dashboard Tests:"
-          grep -c "it(" tests/dashboard.test.js || echo "0"
-          echo ""
-          echo "Detection Tests:"
-          grep -c "it(" tests/detection.test.js || echo "0"
-          echo ""
-          echo "Profile Tests:"
-          grep -c "it(" tests/profile.test.js || echo "0"
-          echo ""
-          
-          TOTAL=$(grep -r "it(" tests/*.test.js | wc -l)
+          npm ci
+          npm run test
+          TOTAL=$(node -e "import fs from 'fs'; const data = JSON.parse(fs.readFileSync('reports/index.json')); console.log(data.stats.tests);")
           echo "========================================="
           echo "Total Test Cases: $TOTAL"
           echo "========================================="
-          
-          if [ "$TOTAL" -ge 300 ]; then
-            echo "✅ Test count requirement met (300+)"
+          if [ "$TOTAL" -eq 350 ]; then
+            echo "✅ Test count requirement met (exactly 350)"
             exit 0
           else
-            echo "❌ Insufficient test cases. Required: 300+, Found: $TOTAL"
+            echo "❌ Test count mismatch. Required: 350, Found: $TOTAL"
             exit 1
           fi
 
       - name: 📈 Generate Test Inventory
-        working-directory: mobile-e2e-framework
+        working-directory: mobile-e2e
         run: |
           cat > test-inventory.md << 'EOF'
           # Test Cases Inventory
           
           ## Summary
-          - **Total Test Cases**: 300+
-          - **Organized by Module**: Authentication, Dashboard, Detection, Profile
+          - **Total Test Cases**: 350
+          - **Organized by Module**: Login, Navigation, Chatbot, Farm Profile, Telemetry Sensors, AI Diagnostics, Drone Monitor, Alerts Center
           - **Report Format**: Excel, HTML, JSON
           
           ## Test Breakdown
           
-          ### Authentication Module (80+ tests)
-          - Valid Login Scenarios (15 tests)
-          - Invalid Login Scenarios (20 tests)
-          - Remember Me Functionality (10 tests)
-          - Biometric Authentication (15 tests)
-          - Session Management (20 tests)
+          ### Login Module (50 tests)
+          - TC_01 to TC_50: User login session and credentials checks
           
-          ### Dashboard Module (90+ tests)
-          - Dashboard Layout (20 tests)
-          - Metrics Data Validation (25 tests)
-          - Sensor Card Functionality (20 tests)
-          - Alerts & Notifications (25 tests)
-          - Navigation (15 tests)
+          ### Navigation Module (100 tests)
+          - TC_51 to TC_150: View switching and header validation
           
-          ### Detection Module (80+ tests)
-          - Camera Functionality (20 tests)
-          - Gallery Selection (15 tests)
-          - Disease Analysis (25 tests)
-          - Results & Actions (20 tests)
+          ### Chatbot Module (100 tests)
+          - TC_151 to TC_250: English & Telugu queries
           
-          ### Profile Module (50+ tests)
-          - Profile Information Display (15 tests)
-          - Profile Editing (20 tests)
-          - Password Management (10 tests)
-          - Account Management (10 tests)
-          - Photo Management (5 tests)
+          ### Farm Profile Module (50 tests)
+          - TC_251 to TC_300: Farmer Rama Rao profile updating
           
-          ## Execution Modes
-          - **Sequential**: Run all tests in order
-          - **Parallel**: Run tests in parallel with n workers
-          - **Selective**: Run specific test suites
-          - **Continuous**: Run on schedule (weekly)
+          ### Telemetry Sensors Module (25 tests)
+          - TC_301 to TC_325: Live IoT sensor updates
           
-          ## Reporting
-          - **Excel Reports**: Comprehensive analysis with charts and statistics
-          - **HTML Reports**: Interactive test reports with mochawesome
-          - **JSON Output**: Machine-readable test results
-          - **Screenshots**: Failure artifacts with visual evidence
+          ### AI Diagnostics Module (15 tests)
+          - TC_326 to TC_340: Leaf scan diagnostics
+          
+          ### Drone Monitor Module (5 tests)
+          - TC_341 to TC_345: Drone visual / NDVI Feed checks
+          
+          ### Alerts Center Module (5 tests)
+          - TC_346 to TC_350: Notification dismissals
           
           EOF
           cat test-inventory.md
@@ -176,5 +148,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-inventory
-          path: mobile-e2e-framework/test-inventory.md
-
+          path: mobile-e2e/test-inventory.md

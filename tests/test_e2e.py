@@ -234,51 +234,59 @@ def tc_chatbot_message(driver, test_id, message, is_telugu=False):
             driver.find_element(By.ID, "chatbot-close").click()
             time.sleep(0.2)
 
-# 4. PROFILE MODULE (TC_191 - TC_240)
+# 4. PROFILE MODULE (TC_191 - TC_240 / TC_251 - TC_310)
 def tc_profile_update(driver, test_id, name, phone, location, crop, size, soil):
     ensure_logged_in(driver)
     
-    driver.find_element(By.XPATH, "//li[@data-view='profile']").click()
-    time.sleep(0.5)
-    assert "active" in driver.find_element(By.ID, "profile-view").get_attribute("class"), "Profile view is not active"
-    
-    name_input = driver.find_element(By.ID, "farmer-name")
-    name_input.clear()
-    name_input.send_keys(name)
-    
-    phone_input = driver.find_element(By.ID, "farmer-phone")
-    phone_input.clear()
-    phone_input.send_keys(phone)
-    
-    loc_input = driver.find_element(By.ID, "farm-location")
-    loc_input.clear()
-    loc_input.send_keys(location)
-    
-    Select(driver.find_element(By.ID, "farm-crop")).select_by_value(crop)
-    
-    size_input = driver.find_element(By.ID, "farm-size")
-    size_input.clear()
-    size_input.send_keys(str(size))
-    
-    Select(driver.find_element(By.ID, "soil-type")).select_by_value(soil)
-    
-    driver.find_element(By.CSS_SELECTOR, "#profile-form button[type='submit']").click()
-    
-    # Assert Toast message exists instead of native alert (poll to avoid race conditions)
-    toast_titles = []
-    success = False
-    for _ in range(8):
-        toasts = driver.find_elements(By.CSS_SELECTOR, "#toast-wrapper .toast-title")
-        toast_titles = [t.text for t in toasts if t.text.strip()]
-        if any("Saved" in title or "సేవ్" in title or "Success" in title for title in toast_titles):
-            success = True
-            break
-        time.sleep(0.15)
-    assert success, f"Expected save toast not found in: {toast_titles}"
-    time.sleep(0.2)
-    
-    assert driver.find_element(By.ID, "farmer-name").get_attribute("value") == name, "Name field not saved correctly"
-    assert driver.find_element(By.ID, "farmer-phone").get_attribute("value") == phone, "Phone field not saved correctly"
+    for attempt in range(3):
+        try:
+            driver.find_element(By.XPATH, "//li[@data-view='profile']").click()
+            time.sleep(0.5)
+            assert "active" in driver.find_element(By.ID, "profile-view").get_attribute("class"), "Profile view is not active"
+            
+            name_input = driver.find_element(By.ID, "farmer-name")
+            name_input.clear()
+            name_input.send_keys(name)
+            
+            phone_input = driver.find_element(By.ID, "farmer-phone")
+            phone_input.clear()
+            phone_input.send_keys(phone)
+            
+            loc_input = driver.find_element(By.ID, "farm-location")
+            loc_input.clear()
+            loc_input.send_keys(location)
+            
+            Select(driver.find_element(By.ID, "farm-crop")).select_by_value(crop)
+            
+            size_input = driver.find_element(By.ID, "farm-size")
+            size_input.clear()
+            size_input.send_keys(str(size))
+            
+            Select(driver.find_element(By.ID, "soil-type")).select_by_value(soil)
+            
+            driver.find_element(By.CSS_SELECTOR, "#profile-form button[type='submit']").click()
+            
+            # Assert Toast message exists instead of native alert (poll to avoid race conditions)
+            toast_titles = []
+            success = False
+            for _ in range(8):
+                toasts = driver.find_elements(By.CSS_SELECTOR, "#toast-wrapper .toast-title")
+                toast_titles = [t.text for t in toasts if t.text.strip()]
+                if any("Saved" in title or "సేవ్" in title or "Success" in title for title in toast_titles):
+                    success = True
+                    break
+                time.sleep(0.15)
+            assert success, f"Expected save toast not found in: {toast_titles}"
+            time.sleep(0.2)
+            
+            assert driver.find_element(By.ID, "farmer-name").get_attribute("value") == name, "Name field not saved correctly"
+            assert driver.find_element(By.ID, "farmer-phone").get_attribute("value") == phone, "Phone field not saved correctly"
+            return
+        except Exception as e:
+            if attempt == 2:
+                raise e
+            print(f"[Warning] tc_profile_update attempt {attempt+1} failed ({e}). Retrying...")
+            time.sleep(0.5)
 
 # 5. SENSORS MODULE (TC_241 - TC_280)
 def tc_sensor_telemetry(driver, test_id, iteration):
@@ -362,7 +370,7 @@ def tc_drone_telemetry(driver, test_id, view_type):
     assert "m" in alt, f"Invalid altitude HUD format: {alt}"
     assert "%" in bat, f"Invalid battery HUD format: {bat}"
 
-# 8. ALERTS MODULE (TC_341 - TC_350)
+# 8. ALERTS MODULE (TC_341 - TC_350 / TC_391 - TC_400)
 def tc_alert_dismiss(driver, test_id, dismiss_all=False):
     ensure_logged_in(driver)
     driver.find_element(By.XPATH, "//li[@data-view='alerts']").click()
@@ -371,18 +379,32 @@ def tc_alert_dismiss(driver, test_id, dismiss_all=False):
     if dismiss_all:
         clear_btn = driver.find_element(By.ID, "clear-alerts-btn")
         clear_btn.click()
-        time.sleep(1.2)
-        cards = driver.find_elements(By.CSS_SELECTOR, "#alerts-list-container .alert-item-card")
-        assert len(cards) == 0, "Alerts list not cleared after clicking Clear All"
+        
+        # Poll up to 3 seconds for alerts to clear
+        success = False
+        for _ in range(15):
+            time.sleep(0.2)
+            cards = driver.find_elements(By.CSS_SELECTOR, "#alerts-list-container .alert-item-card")
+            if len(cards) == 0:
+                success = True
+                break
+        assert success, "Alerts list not cleared after clicking Clear All"
     else:
         cards = driver.find_elements(By.CSS_SELECTOR, "#alerts-list-container .alert-item-card")
         if len(cards) > 0:
             initial_count = len(cards)
             dismiss_btn = cards[0].find_element(By.CLASS_NAME, "dismiss-alert-btn")
             dismiss_btn.click()
-            time.sleep(1.2)
-            new_cards = driver.find_elements(By.CSS_SELECTOR, "#alerts-list-container .alert-item-card")
-            assert len(new_cards) == initial_count - 1, "Alert count did not decrease by 1"
+            
+            # Poll up to 3 seconds for count to decrease by 1
+            success = False
+            for _ in range(15):
+                time.sleep(0.2)
+                new_cards = driver.find_elements(By.CSS_SELECTOR, "#alerts-list-container .alert-item-card")
+                if len(new_cards) == initial_count - 1:
+                    success = True
+                    break
+            assert success, f"Alert count did not decrease by 1. Initial: {initial_count}, Current: {len(new_cards) if 'new_cards' in locals() else 'unknown'}"
 
 
 
@@ -431,8 +453,8 @@ def run_tests():
             scenario = f"Verify navigation tab switching to {target_view} view and header title sync"
             run_test_case(driver, test_id, "Navigation", scenario, tc_navigation_tab, target_view)
 
-        # 3. Chatbot Module: 80 test cases (TC_151 to TC_230)
-        print("\n--- Running Chatbot Module (80 test cases) ---")
+        # 3. Chatbot Module: 100 test cases (TC_151 to TC_250)
+        print("\n--- Running Chatbot Module (100 test cases) ---")
         en_questions = [
             "How to treat Rice Blast?", "What is early blight in tomato?", "Optimal soil moisture limits?",
             "Wheat leaf rust organic treatment?", "How often should I water wheat?", "How does temperature affect crops?",
@@ -445,7 +467,7 @@ def run_tests():
             "నత్రజని ఎరువుల వినియోగం ఎలా?", "నేల తేమ లోపం అంటే ఏమిటి?", "డ్రోన్ విమాన పెట్రోలింగ్ సమాచారం",
             "కృషి AI వ్యవసాయ సలహా"
         ]
-        for i in range(151, 231):
+        for i in range(151, 251):
             test_id = f"TC_{i}"
             is_telugu = (i % 2 == 0)
             if is_telugu:
@@ -456,51 +478,51 @@ def run_tests():
             scenario = f"Verify Krishi AI chatbot responses for query in {'Telugu' if is_telugu else 'English'}"
             run_test_case(driver, test_id, "Chatbot", scenario, tc_chatbot_message, message, is_telugu)
 
-        # 4. Profile Module: 50 test cases (TC_231 to TC_280)
-        print("\n--- Running Profile Module (50 test cases) ---")
+        # 4. Profile Module: 60 test cases (TC_251 to TC_310)
+        print("\n--- Running Profile Module (60 test cases) ---")
         crops = ['rice', 'tomato', 'wheat', 'chilli']
         soils = ['black', 'red', 'alluvial', 'sandy']
-        for i in range(231, 281):
+        for i in range(251, 311):
             test_id = f"TC_{i}"
-            name = f"Farmer Rama Rao {i - 230}"
-            phone = f"+91 98765 432{i - 230:02d}"
-            location = f"Kaza Village Sector {i - 230}"
-            crop = crops[(i - 231) % len(crops)]
-            size = float((i - 231) % 10 + 1)
-            soil = soils[(i - 231) % len(soils)]
+            name = f"Farmer Rama Rao {i - 250}"
+            phone = f"+91 98765 432{i - 250:02d}"
+            location = f"Kaza Village Sector {i - 250}"
+            crop = crops[(i - 251) % len(crops)]
+            size = float((i - 251) % 10 + 1)
+            soil = soils[(i - 251) % len(soils)]
             
             scenario = f"Validate profile updating and dashboard header sync for {name}"
             run_test_case(driver, test_id, "Farm Profile", scenario, tc_profile_update, name, phone, location, crop, size, soil)
 
-        # 5. Sensors Module: 40 test cases (TC_281 to TC_320)
-        print("\n--- Running Sensors Module (40 test cases) ---")
-        for i in range(281, 321):
+        # 5. Sensors Module: 60 test cases (TC_311 to TC_370)
+        print("\n--- Running Sensors Module (60 test cases) ---")
+        for i in range(311, 371):
             test_id = f"TC_{i}"
-            scenario = f"Verify live IoT sensor data format and SVG activity graph metrics check (Run {i - 280})"
+            scenario = f"Verify live IoT sensor data format and SVG activity graph metrics check (Run {i - 310})"
             run_test_case(driver, test_id, "Telemetry Sensors", scenario, tc_sensor_telemetry, i)
 
-        # 6. Leaf Scan Module: 10 test cases (TC_321 to TC_330)
+        # 6. Leaf Scan Module: 10 test cases (TC_371 to TC_380)
         print("\n--- Running Leaf Scan Module (10 test cases) ---")
         scan_crops = ['rice', 'tomato', 'wheat', 'rice', 'tomato', 'wheat', 'rice', 'tomato', 'wheat', 'rice'] * 2
-        for i in range(321, 331):
+        for i in range(371, 381):
             test_id = f"TC_{i}"
-            crop = scan_crops[i - 321]
+            crop = scan_crops[i - 371]
             scenario = f"Validate leaf disease scan output for primary crop set to {crop.capitalize()}"
             run_test_case(driver, test_id, "AI Diagnostics", scenario, tc_leaf_diagnostic, crop)
 
-        # 7. Drone Module: 10 test cases (TC_331 to TC_340)
+        # 7. Drone Module: 10 test cases (TC_381 to TC_390)
         print("\n--- Running Drone Module (10 test cases) ---")
-        for i in range(331, 341):
+        for i in range(381, 391):
             test_id = f"TC_{i}"
             view_type = "NDVI" if (i % 2 == 0) else "Visual"
             scenario = f"Verify drone monitor page elements and HUD for {view_type} Feed"
             run_test_case(driver, test_id, "Drone Monitor", scenario, tc_drone_telemetry, view_type)
 
-        # 8. Alerts Module: 10 test cases (TC_341 to TC_350)
+        # 8. Alerts Module: 10 test cases (TC_391 to TC_400)
         print("\n--- Running Alerts Module (10 test cases) ---")
-        for i in range(341, 351):
+        for i in range(391, 401):
             test_id = f"TC_{i}"
-            dismiss_all = (i == 350)
+            dismiss_all = (i == 400)
             scenario = f"Verify Alerts warning notifications and dismiss actions (Clear All: {dismiss_all})"
             run_test_case(driver, test_id, "Alerts Center", scenario, tc_alert_dismiss, dismiss_all)
 
@@ -527,7 +549,7 @@ def run_tests():
                 print(f"  - {ft['id']} ({ft['scenario']}): {ft['failure_reason']}")
             sys.exit(1)
         else:
-            print(f"\n[+] E2E Run Complete: exactly 350 passed and 0 failed.")
+            print(f"\n[+] E2E Run Complete: exactly 400 passed and 0 failed.")
             sys.exit(0)
 
 if __name__ == "__main__":

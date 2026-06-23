@@ -54,7 +54,7 @@ jobs:
 
       - name: Execute API Load Testing
         run: |
-          python tests/load_test.py
+          python load-testing/load_test.py
 
       - name: Upload Excel Test Reports
         uses: actions/upload-artifact@v4
@@ -63,6 +63,6 @@ jobs:
           name: selenium-web-reports
           path: |
             tests/excel/Web_E2E_Report.xlsx
-            tests/excel/Load_Test_Report.xlsx
+            load-testing/excel/Load_Test_Report.xlsx
             tests/excel/screenshots/
           retention-days: 14

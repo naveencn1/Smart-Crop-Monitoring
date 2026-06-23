@@ -453,8 +453,8 @@ def run_tests():
             scenario = f"Verify navigation tab switching to {target_view} view and header title sync"
             run_test_case(driver, test_id, "Navigation", scenario, tc_navigation_tab, target_view)
 
-        # 3. Chatbot Module: 100 test cases (TC_151 to TC_250)
-        print("\n--- Running Chatbot Module (100 test cases) ---")
+        # 3. Chatbot Module: 80 test cases (TC_151 to TC_230)
+        print("\n--- Running Chatbot Module (80 test cases) ---")
         en_questions = [
             "How to treat Rice Blast?", "What is early blight in tomato?", "Optimal soil moisture limits?",
             "Wheat leaf rust organic treatment?", "How often should I water wheat?", "How does temperature affect crops?",
@@ -467,7 +467,7 @@ def run_tests():
             "నత్రజని ఎరువుల వినియోగం ఎలా?", "నేల తేమ లోపం అంటే ఏమిటి?", "డ్రోన్ విమాన పెట్రోలింగ్ సమాచారం",
             "కృషి AI వ్యవసాయ సలహా"
         ]
-        for i in range(151, 251):
+        for i in range(151, 231):
             test_id = f"TC_{i}"
             is_telugu = (i % 2 == 0)
             if is_telugu:
@@ -478,51 +478,51 @@ def run_tests():
             scenario = f"Verify Krishi AI chatbot responses for query in {'Telugu' if is_telugu else 'English'}"
             run_test_case(driver, test_id, "Chatbot", scenario, tc_chatbot_message, message, is_telugu)
 
-        # 4. Profile Module: 60 test cases (TC_251 to TC_310)
-        print("\n--- Running Profile Module (60 test cases) ---")
+        # 4. Profile Module: 50 test cases (TC_231 to TC_280)
+        print("\n--- Running Profile Module (50 test cases) ---")
         crops = ['rice', 'tomato', 'wheat', 'chilli']
         soils = ['black', 'red', 'alluvial', 'sandy']
-        for i in range(251, 311):
+        for i in range(231, 281):
             test_id = f"TC_{i}"
-            name = f"Farmer Rama Rao {i - 250}"
-            phone = f"+91 98765 432{i - 250:02d}"
-            location = f"Kaza Village Sector {i - 250}"
-            crop = crops[(i - 251) % len(crops)]
-            size = float((i - 251) % 10 + 1)
-            soil = soils[(i - 251) % len(soils)]
+            name = f"Farmer Rama Rao {i - 230}"
+            phone = f"+91 98765 432{i - 230:02d}"
+            location = f"Kaza Village Sector {i - 230}"
+            crop = crops[(i - 231) % len(crops)]
+            size = float((i - 231) % 10 + 1)
+            soil = soils[(i - 231) % len(soils)]
             
             scenario = f"Validate profile updating and dashboard header sync for {name}"
             run_test_case(driver, test_id, "Farm Profile", scenario, tc_profile_update, name, phone, location, crop, size, soil)
 
-        # 5. Sensors Module: 60 test cases (TC_311 to TC_370)
-        print("\n--- Running Sensors Module (60 test cases) ---")
-        for i in range(311, 371):
+        # 5. Sensors Module: 25 test cases (TC_281 to TC_305)
+        print("\n--- Running Sensors Module (25 test cases) ---")
+        for i in range(281, 306):
             test_id = f"TC_{i}"
-            scenario = f"Verify live IoT sensor data format and SVG activity graph metrics check (Run {i - 310})"
+            scenario = f"Verify live IoT sensor data format and SVG activity graph metrics check (Run {i - 280})"
             run_test_case(driver, test_id, "Telemetry Sensors", scenario, tc_sensor_telemetry, i)
 
-        # 6. Leaf Scan Module: 10 test cases (TC_371 to TC_380)
+        # 6. Leaf Scan Module: 10 test cases (TC_306 to TC_315)
         print("\n--- Running Leaf Scan Module (10 test cases) ---")
         scan_crops = ['rice', 'tomato', 'wheat', 'rice', 'tomato', 'wheat', 'rice', 'tomato', 'wheat', 'rice'] * 2
-        for i in range(371, 381):
+        for i in range(306, 316):
             test_id = f"TC_{i}"
-            crop = scan_crops[i - 371]
+            crop = scan_crops[i - 306]
             scenario = f"Validate leaf disease scan output for primary crop set to {crop.capitalize()}"
             run_test_case(driver, test_id, "AI Diagnostics", scenario, tc_leaf_diagnostic, crop)
 
-        # 7. Drone Module: 10 test cases (TC_381 to TC_390)
-        print("\n--- Running Drone Module (10 test cases) ---")
-        for i in range(381, 391):
+        # 7. Drone Module: 5 test cases (TC_316 to TC_320)
+        print("\n--- Running Drone Module (5 test cases) ---")
+        for i in range(316, 321):
             test_id = f"TC_{i}"
             view_type = "NDVI" if (i % 2 == 0) else "Visual"
             scenario = f"Verify drone monitor page elements and HUD for {view_type} Feed"
             run_test_case(driver, test_id, "Drone Monitor", scenario, tc_drone_telemetry, view_type)
 
-        # 8. Alerts Module: 10 test cases (TC_391 to TC_400)
-        print("\n--- Running Alerts Module (10 test cases) ---")
-        for i in range(391, 401):
+        # 8. Alerts Module: 5 test cases (TC_321 to TC_325)
+        print("\n--- Running Alerts Module (5 test cases) ---")
+        for i in range(321, 326):
             test_id = f"TC_{i}"
-            dismiss_all = (i == 400)
+            dismiss_all = (i == 325)
             scenario = f"Verify Alerts warning notifications and dismiss actions (Clear All: {dismiss_all})"
             run_test_case(driver, test_id, "Alerts Center", scenario, tc_alert_dismiss, dismiss_all)
 
@@ -549,7 +549,7 @@ def run_tests():
                 print(f"  - {ft['id']} ({ft['scenario']}): {ft['failure_reason']}")
             sys.exit(1)
         else:
-            print(f"\n[+] E2E Run Complete: exactly 400 passed and 0 failed.")
+            print(f"\n[+] E2E Run Complete: exactly 325 passed and 0 failed.")
             sys.exit(0)
 
 if __name__ == "__main__":

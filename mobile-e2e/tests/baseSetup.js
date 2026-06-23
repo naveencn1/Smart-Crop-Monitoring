@@ -99,11 +99,15 @@ afterEach(async function () {
     excelReport.addLog(new Date().toISOString(), testName, 'Test Execution', 'Success');
   }
 
+  const titleParts = this.currentTest.title.split(' - ');
+  const testId = titleParts[0];
+  const scenarioDescription = titleParts.slice(1).join(' - ');
+
   // Record test results inside Excel reports list
   excelReport.addTest({
-    id: this.currentTest.title.split(' ')[0], // Extract ID prefix from name (e.g. TC_01)
+    id: testId,
     module: this.currentTest.parent.title || 'Mobile E2E',
-    scenario: testName,
+    scenario: scenarioDescription || testName,
     status,
     startTime: this.testStartTime,
     endTime: new Date(),

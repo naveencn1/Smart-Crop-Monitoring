@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import driverFactory from '../drivers/driverFactory.js';
 import logger from '../utilities/logger.js';
 
-describe('Mobile App Authentication Test Suite (TC_01 - TC_50)', function () {
+describe('Login', function () {
   let driver;
   let isWebView = false;
 
@@ -30,9 +30,10 @@ describe('Mobile App Authentication Test Suite (TC_01 - TC_50)', function () {
 
   // Dynamic Mocha Test Generation: 50 Test Cases (TC_01 to TC_50)
   for (let i = 1; i <= 50; i++) {
+    const toggle_pwd = (i % 2 === 0);
     const testId = `TC_${String(i).padStart(2, '0')}`;
-    const username = `farmer_${i}@smartcrop.ai`;
-    const scenario = `Validate mobile app user login session and credentials for ${username}`;
+    const username = `farmer_${String(i).padStart(2, '0')}@smartcrop.ai`;
+    const scenario = `Validate user login session and credentials for ${username} (Toggle Password: ${toggle_pwd})`;
     
     it(`${testId} - ${scenario}`, async function () {
       this.testStartTime = new Date();

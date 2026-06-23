@@ -151,7 +151,6 @@ export class ExcelReport {
 
     // 3. Populate Sheet 2 - Test Cases
     this.testCasesSheet.columns = [
-      { header: 'S.No', key: 'sno', width: 8 },
       { header: 'Test ID', key: 'id', width: 12 },
       { header: 'Module', key: 'module', width: 16 },
       { header: 'Scenario', key: 'scenario', width: 32 },
@@ -165,9 +164,8 @@ export class ExcelReport {
     this.testCasesSheet.getRow(1).eachCell((cell) => { Object.assign(cell, headerStyle); });
     this.testCasesSheet.getRow(1).height = 28;
 
-    this.tests.forEach((t, index) => {
+    this.tests.forEach((t) => {
       const row = this.testCasesSheet.addRow({
-        sno: index + 1,
         id: t.id,
         module: t.module,
         scenario: t.scenario,
@@ -182,11 +180,11 @@ export class ExcelReport {
         cell.font = { name: 'Segoe UI', size: 10 };
         cell.border = borderStyle;
         cell.alignment = { vertical: 'middle' };
-        if (cell.col === 1 || cell.col === 2 || cell.col === 5 || cell.col === 6 || cell.col === 9) {
+        if (cell.col === 1 || cell.col === 4 || cell.col === 5 || cell.col === 8) {
           cell.alignment = { horizontal: 'center', vertical: 'middle' };
         }
-        // Status formatting (col 6 now)
-        if (cell.col === 6) {
+        // Status formatting (col 5 now)
+        if (cell.col === 5) {
           if (t.status === 'Passed') {
             cell.font = { name: 'Segoe UI', bold: true, color: { argb: 'FF2E7D32' } }; // Green
           } else if (t.status === 'Failed') {

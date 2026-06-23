@@ -31,7 +31,7 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     }
   });
 
-  // Dynamic Mocha Test Generation (TC_51 to TC_325)
+  // Dynamic Mocha Test Generation (TC_51 to TC_350)
   // 2. NAVIGATION MODULE (TC_51 - TC_150)
   const views = ['home', 'dashboard', 'detection', 'drone', 'alerts', 'profile'];
   for (let i = 51; i <= 150; i++) {
@@ -60,8 +60,8 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     });
   }
 
-  // 3. CHATBOT MODULE (TC_151 - TC_230)
-  for (let i = 151; i <= 230; i++) {
+  // 3. CHATBOT MODULE (TC_151 - TC_250)
+  for (let i = 151; i <= 250; i++) {
     const testId = `TC_${i}`;
     const scenario = `Verify Krishi AI chatbot responses for query in ${i % 2 === 0 ? 'Telugu' : 'English'}`;
     
@@ -72,10 +72,10 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     });
   }
 
-  // 4. PROFILE MODULE (TC_231 - TC_280)
-  for (let i = 231; i <= 280; i++) {
+  // 4. PROFILE MODULE (TC_251 - TC_300)
+  for (let i = 251; i <= 300; i++) {
     const testId = `TC_${i}`;
-    const scenario = `Validate mobile profile fields updating and DB storage for Farmer Rama Rao ${i - 230}`;
+    const scenario = `Validate mobile profile fields updating and DB storage for Farmer Rama Rao ${i - 250}`;
     
     it(`${testId} - ${scenario}`, async function () {
       this.testStartTime = new Date();
@@ -84,8 +84,8 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     });
   }
 
-  // 5. SENSORS MODULE (TC_281 - TC_305)
-  for (let i = 281; i <= 305; i++) {
+  // 5. SENSORS MODULE (TC_301 - TC_325)
+  for (let i = 301; i <= 325; i++) {
     const testId = `TC_${i}`;
     const scenario = `Verify live IoT sensor data telemetry updates and SVG graphic charts on mobile dashboard`;
     
@@ -96,8 +96,8 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     });
   }
 
-  // 6. LEAF SCAN MODULE (TC_306 - TC_315)
-  for (let i = 306; i <= 315; i++) {
+  // 6. LEAF SCAN MODULE (TC_326 - TC_340)
+  for (let i = 326; i <= 340; i++) {
     const testId = `TC_${i}`;
     const scenario = `Validate leaf disease scan output and bounding boxes for simulated agricultural anomalies`;
     
@@ -108,8 +108,8 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     });
   }
 
-  // 7. DRONE MODULE (TC_316 - TC_320)
-  for (let i = 316; i <= 320; i++) {
+  // 7. DRONE MODULE (TC_341 - TC_345)
+  for (let i = 341; i <= 345; i++) {
     const testId = `TC_${i}`;
     const scenario = `Verify drone monitor page elements and HUD coverage indicators on mobile device`;
     
@@ -120,8 +120,8 @@ describe('Enterprise Mobile Appium E2E Automation Suite', function () {
     });
   }
 
-  // 8. ALERTS MODULE (TC_321 - TC_325)
-  for (let i = 321; i <= 325; i++) {
+  // 8. ALERTS MODULE (TC_346 - TC_350)
+  for (let i = 346; i <= 350; i++) {
     const testId = `TC_${i}`;
     const scenario = `Verify mobile Alerts warning center notifications and dismiss actions`;
     

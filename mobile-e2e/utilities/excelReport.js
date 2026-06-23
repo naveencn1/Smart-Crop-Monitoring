@@ -84,49 +84,70 @@ export class ExcelReport {
 
     // 2. Populate Sheet 1 - Summary
     this.summarySheet.columns = [
-      { header: 'Execution Date', key: 'execDate', width: 22 },
-      { header: 'Device Name', key: 'deviceName', width: 18 },
-      { header: 'Android Version', key: 'androidVer', width: 18 },
-      { header: 'Total Tests', key: 'totalTests', width: 12 },
-      { header: 'Passed', key: 'passed', width: 10 },
-      { header: 'Failed', key: 'failed', width: 10 },
-      { header: 'Skipped', key: 'skipped', width: 10 },
-      { header: 'Pass Percentage', key: 'passPercent', width: 16 },
-      { header: 'Execution Duration', key: 'duration', width: 20 }
+      { header: 'Metric', key: 'metric', width: 25 },
+      { header: 'Value', key: 'value', width: 18 },
+      { header: 'Percentage', key: 'percentage', width: 18 }
     ];
 
     const total = this.tests.length;
     const passed = this.tests.filter(t => t.status.toLowerCase() === 'passed').length;
     const failed = this.tests.filter(t => t.status.toLowerCase() === 'failed').length;
     const skipped = this.tests.filter(t => t.status.toLowerCase() === 'skipped').length;
-    const passPercentage = total > 0 ? `${Math.round((passed / total) * 100)}%` : '0%';
+    const passedPercentDetailed = total > 0 ? `${((passed / total) * 100).toFixed(2)}%` : '0.00%';
+    const failedPercentDetailed = total > 0 ? `${((failed / total) * 100).toFixed(2)}%` : '0.00%';
+    const skippedPercentDetailed = total > 0 ? `${((skipped / total) * 100).toFixed(2)}%` : '0.00%';
     const totalDurationMs = this.tests.reduce((acc, t) => acc + t.duration, 0);
-    const durationFormatted = `${(totalDurationMs / 1000).toFixed(2)}s`;
+    const avgDurationMs = total > 0 ? (totalDurationMs / total).toFixed(2) : '0.00';
 
-    this.summarySheet.addRow({
-      execDate: new Date().toLocaleString(),
-      deviceName: this.deviceDetails.name,
-      androidVer: this.deviceDetails.version,
-      totalTests: total,
-      passed,
-      failed,
-      skipped,
-      passPercent: passPercentage,
-      duration: durationFormatted
-    });
+    this.summarySheet.addRow({ metric: 'Total Tests', value: total, percentage: '100%' });
+    this.summarySheet.addRow({ metric: 'Passed', value: passed, percentage: passedPercentDetailed });
+    this.summarySheet.addRow({ metric: 'Failed', value: failed, percentage: failedPercentDetailed });
+    this.summarySheet.addRow({ metric: 'Skipped', value: skipped, percentage: skippedPercentDetailed });
+    this.summarySheet.addRow({ metric: 'Success Rate', value: passedPercentDetailed, percentage: '' });
+    this.summarySheet.addRow({ metric: 'Total Duration (ms)', value: totalDurationMs, percentage: '' });
+    this.summarySheet.addRow({ metric: 'Average Test Duration', value: parseFloat(avgDurationMs), percentage: '' });
 
     // Style Summary Headers and Cells
     this.summarySheet.getRow(1).eachCell((cell) => { Object.assign(cell, headerStyle); });
     this.summarySheet.getRow(1).height = 28;
+
+    // Row 2: Total Tests (Green)
     this.summarySheet.getRow(2).eachCell((cell) => {
-      cell.font = { name: 'Segoe UI', size: 10 };
+      cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF2E7D32' } };
       cell.border = borderStyle;
       cell.alignment = { horizontal: 'center', vertical: 'middle' };
-      if (cell.col === 8) { // Pass Percentage coloring
-        cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: passed === total && total > 0 ? 'FF2E7D32' : 'FFC62828' } };
-      }
+      if (cell.col === 1) cell.alignment = { horizontal: 'left', vertical: 'middle' };
     });
-    this.summarySheet.getRow(2).height = 24;
+    this.summarySheet.getRow(2).height = 22;
+
+    // Row 3: Passed (Red)
+    this.summarySheet.getRow(3).eachCell((cell) => {
+      cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFC62828' } };
+      cell.border = borderStyle;
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      if (cell.col === 1) cell.alignment = { horizontal: 'left', vertical: 'middle' };
+    });
+    this.summarySheet.getRow(3).height = 22;
+
+    // Row 4: Failed (Yellow)
+    this.summarySheet.getRow(4).eachCell((cell) => {
+      cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFF9A825' } };
+      cell.border = borderStyle;
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      if (cell.col === 1) cell.alignment = { horizontal: 'left', vertical: 'middle' };
+    });
+    this.summarySheet.getRow(4).height = 22;
+
+    // Rows 5-8: normal styling
+    for (let r = 5; r <= 8; r++) {
+      this.summarySheet.getRow(r).eachCell((cell) => {
+        cell.font = { name: 'Segoe UI', size: 10 };
+        cell.border = borderStyle;
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        if (cell.col === 1) cell.alignment = { horizontal: 'left', vertical: 'middle' };
+      });
+      this.summarySheet.getRow(r).height = 22;
+    }
 
     // 3. Populate Sheet 2 - Test Cases
     this.testCasesSheet.columns = [

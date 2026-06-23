@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha tests/baseSetup.js tests/*.test.js --timeout 180000 --reporter mochawesome --reporter-options reportDir=reports,reportFilename=index,html=false,json=true",
+    "test": "mocha tests/baseSetup.js tests/auth.test.js tests/mobile_e2e.test.js --timeout 180000 --reporter mochawesome --reporter-options reportDir=reports,reportFilename=index,html=false,json=true",
     "report:html": "marge reports/index.json --reportDir=reports --reportFilename=html_report --charts=true",
     "test:run": "npm run test && npm run report:html",
     "lint": "eslint ."
